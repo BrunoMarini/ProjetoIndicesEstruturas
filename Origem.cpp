@@ -11,7 +11,7 @@ typedef struct {
 
 } no;
 
-void main() 
+void main()
 {
 	FILE *p;
 	no aux;
@@ -24,6 +24,7 @@ void main()
 	for (int i = 0; i < tam; i++)
 	{
 		scanf("%i", &aux.chave);
+		getchar();
 		fgets(aux.nomeCarro, 50, stdin);
 		fgets(aux.montadora, 50, stdin);
 		scanf("%f", &aux.consumo);
