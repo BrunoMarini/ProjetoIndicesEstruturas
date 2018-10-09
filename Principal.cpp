@@ -22,17 +22,20 @@ void main()
 {
 	menu opcao;
 	FILE* arquivo;
-	no aux;
-	int x;
+	no aux, *cadastros;
+	int qtdCadastros, i;
 
 	arquivo = fopen("database.dat", "rb");
-	fread(&x, sizeof(int), 1, arquivo);
 
-	printf("%i", x);
+	fread(&qtdCadastros, sizeof(int), 1, arquivo);
 
-	fread(&aux, sizeof(no), 1, arquivo);
+	cadastros = (no*)malloc(qtdCadastros * sizeof(no));
 
-	printf("%i", aux.chave);
+	for (i = 0; i < qtdCadastros; i++)
+	{
+		fread(&aux, sizeof(no), 1, arquivo);
+		cadastros[i] = aux;
+	}
 
 	printf("-------------------- Menu --------------------\n");
 	printf(" 1. Consultar um registro;\n");
