@@ -2,12 +2,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <conio.h>
 
 enum menu { consultarRegistros = 1, alterarRegistro, apagarRegistro, inserirRegistro, impressao, sair };
-
-void adicionarRegistros(FILE*);
-
-
 
 typedef struct {
 	int chave;
@@ -18,24 +15,23 @@ typedef struct {
 
 } no;
 
+void salvarNovoArquivo(no, no*, int*);
+void adicionarRegistros(no*, int*);
+void carregarBaseDados(int*, no*);
+
+int verificaChave(int, no*, int);
+
 void main()
 {
 	menu opcao;
-	FILE* arquivo;
-	no aux, *cadastros;
-	int qtdCadastros, i;
+	no aux;
+	no *cadastros = NULL;
+	int qtdCadastros;
 
-	arquivo = fopen("database.dat", "rb");
+	carregarBaseDados(&qtdCadastros, cadastros);
 
-	fread(&qtdCadastros, sizeof(int), 1, arquivo);
-
-	cadastros = (no*)malloc(qtdCadastros * sizeof(no));
-
-	for (i = 0; i < qtdCadastros; i++)
-	{
-		fread(&aux, sizeof(no), 1, arquivo);
-		cadastros[i] = aux;
-	}
+	printf("%i", qtdCadastros);
+	printf("%s", cadastros[0].montadora);
 
 	printf("-------------------- Menu --------------------\n");
 	printf(" 1. Consultar um registro;\n");
@@ -56,7 +52,7 @@ void main()
 	case apagarRegistro:
 		break;
 	case inserirRegistro:
-		adicionarRegistros(arquivo);
+		adicionarRegistros(cadastros, &qtdCadastros);
 		break;
 	case impressao:
 		break;
@@ -71,32 +67,102 @@ void main()
 	system("pause");
 }
 
-void adicionarRegistros(FILE* arq)
+void carregarBaseDados(int *qtd, no *cadastros)
 {
-	no cadastro;
+	no aux;
+	int i;
 
-	arq = fopen("carros.dat", "a+b");
+	FILE *arquivo = fopen("database.dat", "rb");
+
+	fread(qtd, sizeof(int), 1, arquivo);
+
+	cadastros = (no*)malloc((*qtd) * sizeof(no));
+
+	for (i = 0; i < (*qtd); i++)
+	{
+		fread(&aux, sizeof(no), 1, arquivo);
+		cadastros[i] = aux;
+	}
+
+	fclose(arquivo);
+
+	//printf("%s", cadastros[0].montadora);
+	//printf("%s", cadastros[2].nomeCarro);
+
+}
+
+void adicionarRegistros(no* cadastros, int *qtd)
+{
+	//FILE *arq = fopen("carros.dat", "a+b");
+	no aux;
+	int i, aleatorio, op;
 
 	system("cls");
 
 	do
 	{
-		printf("----- Adicionar Registro ----\n");
+		printf("----- Adicionar Registro ----\n\n");
+
+		getchar();
 
 		printf("Digite o nome do carro: ");
-		fgets(cadastro.nomeCarro, 50, stdin);
+		fgets(aux.nomeCarro, 50, stdin);
 
 		printf("Digite a montadora: ");
-		fgets(cadastro.montadora, 50, stdin);
+		fgets(aux.montadora, 50, stdin);
 
 		printf("Digite o consumo do veiculo: ");
-		scanf("%f", &cadastro.consumo);
+		scanf("%f", &aux.consumo);
 
 		printf("Digite o peso do veiculo: ");
-		scanf("%i", &cadastro.peso);
+		scanf("%i", &aux.peso);
 
-	} while (true);
+		do
+		{
+			aleatorio = 1000 + (rand() % 9999);
 
+		} while (verificaChave(aleatorio, cadastros, (*qtd)) != 0 || aleatorio <= 1000 || aleatorio >= 9999);
 
+		aux.chave = aleatorio;
 
+		salvarNovoArquivo(aux, cadastros, qtd);
+
+		printf("\n Deseja cadastrar outro veiculo?");
+		printf(" 1. SIM;\n");
+		printf(" 2. NAO;\n\n");
+		printf(" Opcao: ");
+		scanf("%i", &op);
+
+	} while (op != 2);
+
+}
+
+void salvarNovoArquivo(no novo, no *cadastros, int *qtd)
+{
+	FILE *arquivo = fopen("database.dat", "wb");
+	int i;
+
+	(*qtd)++;
+
+	fwrite(qtd, sizeof(int), 1, arquivo);
+
+	for (i = 0; i < ((*qtd) - 1); i++)
+		fwrite(&cadastros[i], sizeof(no), 1, arquivo);
+	
+	fwrite(&novo, sizeof(no), 1, arquivo);
+
+	fclose(arquivo);
+
+	carregarBaseDados(qtd, cadastros);
+
+}
+
+int verificaChave(int x, no* cadastrados, int tam)
+{
+	for (int i = 0; i <= tam; i++)
+	{
+		if (x == cadastrados[i].chave)
+			return 1;
+	}
+	return 0;
 }
