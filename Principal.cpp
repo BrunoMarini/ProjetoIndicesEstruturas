@@ -30,8 +30,8 @@ void main()
 
 	carregarBaseDados(&qtdCadastros, cadastros);
 
-	printf("%i", qtdCadastros);
-	printf("%s", cadastros[0].montadora);
+	//printf("%i", qtdCadastros);
+	//printf("%s", cadastros[0].montadora);
 
 	printf("-------------------- Menu --------------------\n");
 	printf(" 1. Consultar um registro;\n");
@@ -81,14 +81,17 @@ void carregarBaseDados(int *qtd, no *cadastros)
 	for (i = 0; i < (*qtd); i++)
 	{
 		fread(&aux, sizeof(no), 1, arquivo);
-		cadastros[i] = aux;
+		cadastros[i].chave = aux.chave;
+		cadastros[i].consumo = aux.consumo;
+		strcpy(cadastros[i].montadora, aux.montadora);
+		strcpy(cadastros[i].nomeCarro, aux.nomeCarro);
+		cadastros[i].peso = aux.peso;
 	}
 
 	fclose(arquivo);
 
 	//printf("%s", cadastros[0].montadora);
 	//printf("%s", cadastros[2].nomeCarro);
-
 }
 
 void adicionarRegistros(no* cadastros, int *qtd)
