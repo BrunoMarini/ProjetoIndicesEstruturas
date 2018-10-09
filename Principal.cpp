@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 
-enum menu { consultarRegistros = 1, alterarRegistro, apagarRegistro, inserirRegistro, impressao };
+enum menu { consultarRegistros = 1, alterarRegistro, apagarRegistro, inserirRegistro, impressao, sair };
 
 void adicionarRegistros(FILE*);
 
@@ -22,15 +22,25 @@ void main()
 {
 	menu opcao;
 	FILE* arquivo;
+	no aux;
+	int x;
 
-	arquivo = fopen("carros.dat", "a+b");
+	arquivo = fopen("database.dat", "rb");
+	fread(&x, sizeof(int), 1, arquivo);
+
+	printf("%i", x);
+
+	fread(&aux, sizeof(no), 1, arquivo);
+
+	printf("%i", aux.chave);
 
 	printf("-------------------- Menu --------------------\n");
 	printf(" 1. Consultar um registro;\n");
 	printf(" 2. ALterar/Atualizar campo(s) de um registro;\n");
 	printf(" 3. Eliminar um registro do arquivo;\n");
 	printf(" 4. Inserir um registro no arquivo;\n");
-	printf(" 5. Impressao;\n\n");
+	printf(" 5. Impressao;\n");
+	printf(" 6. Sair;\n\n");
 	printf(" Opcao desejada: ");
 	scanf("%d", &opcao);
 
@@ -46,6 +56,8 @@ void main()
 		adicionarRegistros(arquivo);
 		break;
 	case impressao:
+		break;
+	case sair:
 		break;
 	default:
 		break;
@@ -64,13 +76,13 @@ void adicionarRegistros(FILE* arq)
 
 	system("cls");
 
-	do 
+	do
 	{
 		printf("----- Adicionar Registro ----\n");
-		
+
 		printf("Digite o nome do carro: ");
 		fgets(cadastro.nomeCarro, 50, stdin);
-		
+
 		printf("Digite a montadora: ");
 		fgets(cadastro.montadora, 50, stdin);
 
@@ -80,7 +92,7 @@ void adicionarRegistros(FILE* arq)
 		printf("Digite o peso do veiculo: ");
 		scanf("%i", &cadastro.peso);
 
-	} while ();
+	} while (true);
 
 
 
