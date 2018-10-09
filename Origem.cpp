@@ -3,17 +3,25 @@
 #include <stdio.h>
 #include <string.h>
 
-enum menu {	consultarRegistros = 1, alterarRegistro, apagarRegistro, inserirRegistro, impressao};
+enum menu { consultarRegistros = 1, alterarRegistro, apagarRegistro, inserirRegistro, impressao };
 
 void adicionarRegistros(FILE*);
+
+
+
+typedef struct {
+	int chave;
+	char nomeCarro[50];
+	char montadora[50];
+	float consumo;
+	int peso;
+
+} no;
 
 void main()
 {
 	menu opcao;
 	FILE* arquivo;
-
-
-
 
 	arquivo = fopen("carros.dat", "a+b");
 
@@ -50,10 +58,30 @@ void main()
 
 void adicionarRegistros(FILE* arq)
 {
-//	int n;
+	no cadastro;
 
 	arq = fopen("carros.dat", "a+b");
 
-	
+	system("cls");
+
+	do 
+	{
+		printf("----- Adicionar Registro ----\n");
+		
+		printf("Digite o nome do carro: ");
+		fgets(cadastro.nomeCarro, 50, stdin);
+		
+		printf("Digite a montadora: ");
+		fgets(cadastro.montadora, 50, stdin);
+
+		printf("Digite o consumo do veiculo: ");
+		scanf("%f", &cadastro.consumo);
+
+		printf("Digite o peso do veiculo: ");
+		scanf("%i", &cadastro.peso);
+
+	} while ();
+
+
 
 }
