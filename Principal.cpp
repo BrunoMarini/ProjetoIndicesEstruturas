@@ -15,9 +15,9 @@ typedef struct {
 
 } no;
 
-void salvarNovoArquivo(no, no*, int*);
-void adicionarRegistros(no*, int*);
-void carregarBaseDados(int*, no*);
+void salvarNovoArquivo(no, no**, int*);
+void adicionarRegistros(no**, int*);
+no* carregarBaseDados(int*, no*);
 
 int verificaChave(int, no*, int);
 
@@ -28,10 +28,7 @@ void main()
 	no *cadastros = NULL;
 	int qtdCadastros;
 
-	carregarBaseDados(&qtdCadastros, cadastros);
-
-	//printf("%i", qtdCadastros);
-	//printf("%s", cadastros[0].montadora);
+	cadastros = carregarBaseDados(&qtdCadastros, cadastros);
 
 	printf("-------------------- Menu --------------------\n");
 	printf(" 1. Consultar um registro;\n");
@@ -52,7 +49,7 @@ void main()
 	case apagarRegistro:
 		break;
 	case inserirRegistro:
-		adicionarRegistros(cadastros, &qtdCadastros);
+		adicionarRegistros(&cadastros, &qtdCadastros);
 		break;
 	case impressao:
 		break;
@@ -67,34 +64,30 @@ void main()
 	system("pause");
 }
 
-void carregarBaseDados(int *qtd, no *cadastros)
+no* carregarBaseDados(int *qtd, no *cadastros)
 {
 	no aux;
-	int i;
+	int i, qtdCadastros;
 
 	FILE *arquivo = fopen("database.dat", "rb");
 
 	fread(qtd, sizeof(int), 1, arquivo);
 
-	cadastros = (no*)malloc((*qtd) * sizeof(no));
+	qtdCadastros = *qtd;
 
-	for (i = 0; i < (*qtd); i++)
+	cadastros = (no*)malloc(qtdCadastros * sizeof(no));
+
+	for (i = 0; i < qtdCadastros; i++)
 	{
 		fread(&aux, sizeof(no), 1, arquivo);
-		cadastros[i].chave = aux.chave;
-		cadastros[i].consumo = aux.consumo;
-		strcpy(cadastros[i].montadora, aux.montadora);
-		strcpy(cadastros[i].nomeCarro, aux.nomeCarro);
-		cadastros[i].peso = aux.peso;
+		cadastros[i] = aux;
 	}
-
 	fclose(arquivo);
 
-	//printf("%s", cadastros[0].montadora);
-	//printf("%s", cadastros[2].nomeCarro);
+	return(cadastros);
 }
 
-void adicionarRegistros(no* cadastros, int *qtd)
+void adicionarRegistros(no** cadastros, int *qtd)
 {
 	//FILE *arq = fopen("carros.dat", "a+b");
 	no aux;
@@ -124,7 +117,7 @@ void adicionarRegistros(no* cadastros, int *qtd)
 		{
 			aleatorio = 1000 + (rand() % 9999);
 
-		} while (verificaChave(aleatorio, cadastros, (*qtd)) != 0 || aleatorio <= 1000 || aleatorio >= 9999);
+		} while (verificaChave(aleatorio, *cadastros, (*qtd)) != 0 || aleatorio <= 1000 || aleatorio >= 9999);
 
 		aux.chave = aleatorio;
 
@@ -140,7 +133,7 @@ void adicionarRegistros(no* cadastros, int *qtd)
 
 }
 
-void salvarNovoArquivo(no novo, no *cadastros, int *qtd)
+void salvarNovoArquivo(no novo, no **cadastros, int *qtd)
 {
 	FILE *arquivo = fopen("database.dat", "wb");
 	int i;
@@ -151,12 +144,12 @@ void salvarNovoArquivo(no novo, no *cadastros, int *qtd)
 
 	for (i = 0; i < ((*qtd) - 1); i++)
 		fwrite(&cadastros[i], sizeof(no), 1, arquivo);
-	
+
 	fwrite(&novo, sizeof(no), 1, arquivo);
 
 	fclose(arquivo);
 
-	carregarBaseDados(qtd, cadastros);
+	//carregarBaseDados(qtd, cadastros);
 
 }
 
