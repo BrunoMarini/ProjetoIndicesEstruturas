@@ -26,7 +26,9 @@ no* adicionarRegistros(no*, int*);
 no* carregarBaseDados(int*, no*);
 listaDenso* criarIndiceDenso(int, no*, listaDenso*);
 void impressoes(no*, listaDenso*, int qtd);
+void consultarRegistro(no*, listaDenso*, int);
 void bubble(listaDenso[], int);
+int buscaBinaria(listaDenso*, int, int);
 
 int verificaChave(int, no*, int);
 
@@ -53,6 +55,7 @@ void main()
 	switch (opcao)
 	{
 	case consultarRegistros:
+		consultarRegistro(cadastros, indiceDenso, qtdCadastros);
 		break;
 	case alterarRegistro:
 		break;
@@ -291,4 +294,58 @@ void bubble(listaDenso lista[], int tam)
 			}
 		}
 	}
+}
+
+void consultarRegistro(no* cadastros, listaDenso* indice, int qtd)
+{
+	int codigo, posicao, j;
+
+	system("cls");
+
+	printf("----- Consultar Registro -----\n\n");
+	printf("Digite o codigo que deseja encontrar: ");
+	scanf("%i", &codigo);
+
+	posicao = buscaBinaria(indice, qtd, codigo);
+
+	system("cls");
+
+	if (posicao != -1)
+	{
+		printf(" Chave  Nome Carro      Montadora       Consumo  Peso\n\n");
+
+		printf(" %i   ", cadastros[posicao].chave);
+		printf("%s ", cadastros[posicao].nomeCarro);
+		for (j = 15 - strlen(cadastros[posicao].nomeCarro); j > 0; j--) printf(" ");
+		printf("%s ", cadastros[posicao].montadora);
+		for (j = 15 - strlen(cadastros[posicao].montadora); j > 0; j--) printf(" ");
+		if (cadastros[posicao].consumo < 10) printf("0");
+		printf("%.2f ", cadastros[posicao].consumo);
+		printf("   %i\n", cadastros[posicao].peso);
+	}
+	else
+	{
+		printf("ERRO! NAO FOI ENCONTRADO O CADASTRO DE CHAVE %i NA BASE DE DADOS\n", codigo);
+	}
+
+}
+
+int buscaBinaria(listaDenso* indice, int tam, int n)
+{
+	int sup = 0, inf = tam - 1, meio;
+
+	while (inf >= sup)
+	{
+		meio = (sup + inf) / 2;
+
+		if (indice[meio].chave == n)
+			return (indice[meio].posicao);
+		if (indice[meio].chave > n)
+			inf = meio - 1;
+		else
+			sup = meio + 1;
+	}
+
+	return (-1);
+
 }
