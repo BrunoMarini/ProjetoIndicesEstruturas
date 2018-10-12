@@ -25,6 +25,7 @@ no* salvarNovoArquivo(no, no*, int*);
 no* adicionarRegistros(no*, int*);
 no* carregarBaseDados(int*, no*);
 no* modificarRegistro(no*, listaDenso*, int);
+no* eliminarRegistro(no*, listaDenso*, int*);
 listaDenso* criarIndiceDenso(int, no*, listaDenso*);
 void impressoes(no*, listaDenso*, int qtd);
 void consultarRegistro(no*, listaDenso*, int);
@@ -62,6 +63,7 @@ void main()
 		cadastros = modificarRegistro(cadastros, indiceDenso, qtdCadastros);
 		break;
 	case apagarRegistro:
+		cadastros = eliminarRegistro(cadastros, indiceDenso, &qtdCadastros);
 		break;
 	case inserirRegistro:
 		cadastros = adicionarRegistros(cadastros, &qtdCadastros);
@@ -155,14 +157,19 @@ no* adicionarRegistros(no* cadastros, int *qtd)
 no* salvarNovoArquivo(no novo, no *cadastros, int *qtd)
 {
 	FILE *arquivo = fopen("database.dat", "wb");
-	int i;
+	int i, sub;
 
-	if(novo.chave != -1)
+	if (novo.chave != -1)
+	{
 		(*qtd)++;
-
+		sub = 1;
+	}
+	else
+		sub = 0;
+		
 	fwrite(qtd, sizeof(int), 1, arquivo);
 
-	for (i = 0; i < ((*qtd) - 1); i++)
+	for (i = 0; i < ((*qtd) - sub); i++)
 		fwrite(&cadastros[i], sizeof(no), 1, arquivo);
 
 	if(novo.chave != -1)
@@ -355,6 +362,48 @@ listaDenso* criarIndiceDenso(int qtdCadastros, no* cadastros, listaDenso* indice
 	bubble(indice, qtdCadastros);
 
 	return (indice);
+
+}
+
+no* eliminarRegistro(no* cadastros, listaDenso* indice, int *qtd)
+{
+	int posicao, codigo, j, i;
+	no aux;
+	aux.chave = -1;
+	system("cls");
+
+	printf("----- Eliminar Registro -----\n\n");
+	printf("Digite o codigo que deseja do registro a eliminar: ");
+	scanf("%i", &codigo);
+
+	posicao = buscaBinaria(indice, *qtd, codigo);
+
+	printf(" Chave  Nome Carro      Montadora       Consumo  Peso\n\n");
+
+	printf(" %i   ", cadastros[posicao].chave);
+	printf("%s ", cadastros[posicao].nomeCarro);
+	for (j = 15 - strlen(cadastros[posicao].nomeCarro); j > 0; j--) printf(" ");
+	printf("%s ", cadastros[posicao].montadora);
+	for (j = 15 - strlen(cadastros[posicao].montadora); j > 0; j--) printf(" ");
+	if (cadastros[posicao].consumo < 10) printf("0");
+	printf("%.2f ", cadastros[posicao].consumo);
+	printf("   %i\n", cadastros[posicao].peso);
+
+	printf("\nTem certeza que deseja excluir esse registro?");
+	printf("\n 1. Sim;\n 2. Nao;\n\nOpcao: ");
+	scanf("%i", &codigo);
+
+	if (codigo == 1)
+	{
+		for (i = posicao; i < *qtd; i++)
+			cadastros[i] = cadastros[i + 1];
+
+		(*qtd)--;
+
+		return(salvarNovoArquivo(aux, cadastros, qtd));
+
+	}
+	return (cadastros);
 
 }
 
