@@ -16,9 +16,15 @@ typedef struct {
 
 } no;
 
+typedef struct {
+	int chave;
+	int posicao;
+} indiceDenso;
+
 no* salvarNovoArquivo(no, no*, int*);
 no* adicionarRegistros(no*, int*);
 no* carregarBaseDados(int*, no*);
+indiceDenso* criarIndiceDenso(int, no*, indiceDenso*);
 void impressoes(no*);
 
 int verificaChave(int, no*, int);
@@ -28,9 +34,11 @@ void main()
 	menuPrincipal opcao;
 	no aux;
 	no *cadastros = NULL;
+	indiceDenso *indiceDenso;
 	int qtdCadastros;
 
 	cadastros = carregarBaseDados(&qtdCadastros, cadastros);
+	indiceDenso = criarIndiceDenso(qtdCadastros, cadastros, indiceDenso);
 
 	printf("-------------------- Menu --------------------\n");
 	printf(" 1. Consultar um registro;\n");
@@ -200,4 +208,9 @@ void impressoes(no* cadastros)
 	}
 
 	
+}
+
+indiceDenso* criarIndiceDenso(int qtdCadastros, no* cadastros)
+{
+
 }
