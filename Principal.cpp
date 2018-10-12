@@ -19,22 +19,22 @@ typedef struct {
 typedef struct {
 	int chave;
 	int posicao;
-} indiceDenso;
+} listaDenso;
 
 no* salvarNovoArquivo(no, no*, int*);
 no* adicionarRegistros(no*, int*);
 no* carregarBaseDados(int*, no*);
-indiceDenso* criarIndiceDenso(int, no*, indiceDenso*);
-void impressoes(no*);
+listaDenso* criarIndiceDenso(int, no*, listaDenso*);
+void impressoes(no*, listaDenso*, int qtd);
+void bubble(listaDenso[], int);
 
 int verificaChave(int, no*, int);
 
 void main()
 {
 	menuPrincipal opcao;
-	no aux;
 	no *cadastros = NULL;
-	indiceDenso *indiceDenso;
+	listaDenso *indiceDenso = NULL;
 	int qtdCadastros;
 
 	cadastros = carregarBaseDados(&qtdCadastros, cadastros);
@@ -60,9 +60,10 @@ void main()
 		break;
 	case inserirRegistro:
 		cadastros = adicionarRegistros(cadastros, &qtdCadastros);
+		indiceDenso = criarIndiceDenso(qtdCadastros, cadastros, indiceDenso);
 		break;
 	case impressao:
-		impressoes(cadastros);
+		impressoes(cadastros, indiceDenso, qtdCadastros);
 		break;
 	case sair:
 		break;
@@ -102,7 +103,7 @@ no* adicionarRegistros(no* cadastros, int *qtd)
 {
 	//FILE *arq = fopen("carros.dat", "a+b");
 	no aux;
-	int i, aleatorio, op;
+	int aleatorio, op;
 
 	system("cls");
 
@@ -166,6 +167,76 @@ no* salvarNovoArquivo(no novo, no *cadastros, int *qtd)
 
 }
 
+void impressoes(no* cadastros, listaDenso* lista, int qtd)
+{
+	int i;
+	int posicao;
+	menuImpressao opcao;
+
+	system("cls");
+
+	printf("----- Menu Impressao -----\n\n");
+	printf("1. Imprimir todos por chave primaria ordenada;\n");
+	printf("2. Imprimir todos ordenado pelo nome do carro;\n");
+	printf("3. Imprimir todos por categoria ordenados pela chave;\n");
+	printf("4. Imprimir todos por categoria ordenados pelo nome do carro;\n");
+	printf("5. Imprimir arquivo;\n\n");
+	printf("Opcao: ");
+	scanf("%i", &opcao);
+
+	switch (opcao)
+	{
+	case chaveOrdenada:
+
+		printf("Chave  Nome Carro  Montadora  Consumo  Peso");
+
+		for (i = 0; i < qtd; i++)
+		{
+			posicao = lista[i].posicao;
+
+			printf("%i %s %s %.2f %i\n", cadastros[posicao].chave, cadastros[posicao].nomeCarro, cadastros[posicao].montadora, 
+				cadastros[posicao].consumo, cadastros[posicao].peso);
+		}
+
+		break;
+	case nomeOrdenado:
+		break;
+	case categoriaChaveOrdenado:
+		break;
+	case categoriaNomeOrdenado:
+		break;
+	case imprimirArquivo:
+
+		for (i = 0; i < qtd; i++)
+			printf("%i %s %s %.2f %i\n", cadastros[i].chave, cadastros[i].nomeCarro, cadastros[i].montadora,
+				cadastros[i].consumo, cadastros[i].peso);
+
+		break;
+	default:
+		break;
+	}
+
+
+}
+
+listaDenso* criarIndiceDenso(int qtdCadastros, no* cadastros, listaDenso* indice)
+{
+	int i;
+
+	indice = (listaDenso*)malloc(qtdCadastros * sizeof(listaDenso));
+
+	for (i = 0; i < qtdCadastros; i++)
+	{
+		indice[i].chave = cadastros[i].chave;
+		indice[i].posicao = i;
+	}
+
+	bubble(indice, qtdCadastros);
+
+	return (indice);
+
+}
+
 int verificaChave(int x, no* cadastrados, int tam)
 {
 	for (int i = 0; i <= tam; i++)
@@ -176,41 +247,30 @@ int verificaChave(int x, no* cadastrados, int tam)
 	return 0;
 }
 
-void impressoes(no* cadastros)
+void bubble(listaDenso lista[], int tam)
 {
-	menuImpressao opcao;
+	int i, j;
+	listaDenso aux;
+	int teste = 1;
 
-	system("cls");
-
-	printf("----- Menu Impressao -----\n\n");
-	printf("1. Imprimir todos por chave primaria ordenada;\n");
-	printf("2. Imprimir todos ordenado pelo nome do carro;\n");
-	printf("3. Imprimir todos por categoria ordenados pela chave;\n");
-	printf("4. Imprimir todos por categoria ordenados pelo nome do carro\n;");
-	printf("5. Imprimir arquivo;\n\n");
-	printf("Opcao: ");
-	scanf("%i", &opcao);
-
-	switch (opcao)
+	for (i = 0; i < tam - 1 && teste; i++)
 	{
-	case chaveOrdenada:
-		break;
-	case nomeOrdenado:
-		break;
-	case categoriaChaveOrdenado:
-		break;
-	case categoriaNomeOrdenado:
-		break;
-	case imprimirArquivo:
-		break;
-	default:
-		break;
+		teste = 0;
+		
+		for (j = 0; j < tam - i - 1; j++)
+		{
+			if (lista[j].chave > lista[j + 1].chave)
+			{
+				teste = 1;
+				aux.chave = lista[j].chave;
+				aux.posicao = lista[j].posicao;
+
+				lista[j].chave = lista[j + 1].chave;
+				lista[j].posicao = lista[j + 1].posicao;
+				
+				lista[j + 1].chave = aux.chave;
+				lista[j + 1].posicao = aux.posicao;
+			}
+		}
 	}
-
-	
-}
-
-indiceDenso* criarIndiceDenso(int qtdCadastros, no* cadastros)
-{
-
 }
