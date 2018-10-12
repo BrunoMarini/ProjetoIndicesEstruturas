@@ -24,6 +24,7 @@ typedef struct {
 no* salvarNovoArquivo(no, no*, int*);
 no* adicionarRegistros(no*, int*);
 no* carregarBaseDados(int*, no*);
+no* modificarRegistro(no*, listaDenso*, int);
 listaDenso* criarIndiceDenso(int, no*, listaDenso*);
 void impressoes(no*, listaDenso*, int qtd);
 void consultarRegistro(no*, listaDenso*, int);
@@ -58,6 +59,7 @@ void main()
 		consultarRegistro(cadastros, indiceDenso, qtdCadastros);
 		break;
 	case alterarRegistro:
+		cadastros = modificarRegistro(cadastros, indiceDenso, qtdCadastros);
 		break;
 	case apagarRegistro:
 		break;
@@ -155,18 +157,116 @@ no* salvarNovoArquivo(no novo, no *cadastros, int *qtd)
 	FILE *arquivo = fopen("database.dat", "wb");
 	int i;
 
-	(*qtd)++;
+	if(novo.chave != -1)
+		(*qtd)++;
 
 	fwrite(qtd, sizeof(int), 1, arquivo);
 
 	for (i = 0; i < ((*qtd) - 1); i++)
 		fwrite(&cadastros[i], sizeof(no), 1, arquivo);
 
-	fwrite(&novo, sizeof(no), 1, arquivo);
+	if(novo.chave != -1)
+		fwrite(&novo, sizeof(no), 1, arquivo);
 
 	fclose(arquivo);
 
 	return(carregarBaseDados(qtd, cadastros));
+
+}
+
+no* modificarRegistro(no* cadastros, listaDenso* indice, int qtd)
+{
+	int posicao, codigo, op, i, j, peso;
+	char aux[50];
+	float consumo;
+	no x;
+
+	system("cls");
+
+	printf("----- Modificar Registro -----\n\n");
+	printf("Digite o codigo que deseja encontrar: ");
+	scanf("%i", &codigo);
+
+	posicao = buscaBinaria(indice, qtd, codigo);
+
+	if (posicao != -1)
+	{
+		printf("\n Chave  Nome Carro      Montadora       Consumo  Peso\n\n");
+
+		printf(" %i   ", cadastros[posicao].chave);
+		printf("%s ", cadastros[posicao].nomeCarro);
+		for (j = 15 - strlen(cadastros[posicao].nomeCarro); j > 0; j--) printf(" ");
+		printf("%s ", cadastros[posicao].montadora);
+		for (j = 15 - strlen(cadastros[posicao].montadora); j > 0; j--) printf(" ");
+		if (cadastros[posicao].consumo < 10) printf("0");
+		printf("%.2f ", cadastros[posicao].consumo);
+		printf("   %i\n", cadastros[posicao].peso);
+
+		printf("\nDeseja alterar o nome do carro?\n\n");
+		printf("1. Sim;\n2. Nao;\n\nOpcao: ");
+		scanf("%i", &op);
+		
+		if (op == 1)
+		{
+			getchar();
+			printf("\nDigite o novo nome ao carro: ");
+			fgets(aux, 50, stdin);
+			for (i = 0; i < strlen(aux); i++)
+				if (aux[i] == '\n')
+					aux[i] = '\0';
+			strcpy(cadastros[posicao].nomeCarro, aux);
+		}
+
+		printf("\nDeseja alterar o nome da montadora?\n\n");
+		printf("1. Sim;\n2. Nao;\n\nOpcao: ");
+		scanf("%i", &op);
+
+		if (op == 1)
+		{
+			getchar();
+			printf("\nDigite o novo nome a montadora:");
+			fgets(aux, 50, stdin);
+			for (i = 0; i < strlen(aux); i++)
+				if (aux[i] == '\n')
+					aux[i] = '\0';
+			strcpy(cadastros[posicao].montadora, aux);
+		}
+
+		printf("\nDeseja alterar o consumo do carro?\n\n");
+		printf("1. Sim;\n2. Nao;\n\nOpcao: ");
+		scanf("%i", &op);
+
+		if (op == 1)
+		{
+			printf("\nDigite o novo consumo: ");
+			scanf("%f", &consumo);
+			cadastros[posicao].consumo = consumo;
+		}
+
+		printf("\nDeseja alterar o peso do carro?\n\n");
+		printf("1. Sim;\n2. Nao;\n\nOpcao: ");
+		scanf("%i", &op);
+
+		if (op == 1)
+		{
+			printf("\nDigite o novo peso: ");
+			scanf("%i", &peso);
+			cadastros[posicao].peso = peso;
+		}
+		
+		x.chave = -1;
+
+		printf("\n\n Atualizado com Sucesso!\n");
+
+		return(salvarNovoArquivo(x, cadastros, &qtd));
+
+	}
+	else
+	{
+		printf("ERRO! NAO FOI ENCONTRADO O CADASTRO DE CHAVE %i NA BASE DE DADOS\n", codigo);
+		return(cadastros);
+	}
+
 
 }
 
