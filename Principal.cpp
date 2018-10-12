@@ -4,7 +4,8 @@
 #include <string.h>
 #include <conio.h>
 
-enum menu { consultarRegistros = 1, alterarRegistro, apagarRegistro, inserirRegistro, impressao, sair };
+enum menuPrincipal { consultarRegistros = 1, alterarRegistro, apagarRegistro, inserirRegistro, impressao, sair };
+enum menuImpressao { chaveOrdenada = 1, nomeOrdenado, categoriaChaveOrdenado, categoriaNomeOrdenado, imprimirArquivo };
 
 typedef struct {
 	int chave;
@@ -15,15 +16,16 @@ typedef struct {
 
 } no;
 
-void salvarNovoArquivo(no, no**, int*);
-void adicionarRegistros(no**, int*);
+no* salvarNovoArquivo(no, no*, int*);
+no* adicionarRegistros(no*, int*);
 no* carregarBaseDados(int*, no*);
+void impressoes(no*);
 
 int verificaChave(int, no*, int);
 
 void main()
 {
-	menu opcao;
+	menuPrincipal opcao;
 	no aux;
 	no *cadastros = NULL;
 	int qtdCadastros;
@@ -49,9 +51,10 @@ void main()
 	case apagarRegistro:
 		break;
 	case inserirRegistro:
-		adicionarRegistros(&cadastros, &qtdCadastros);
+		cadastros = adicionarRegistros(cadastros, &qtdCadastros);
 		break;
 	case impressao:
+		impressoes(cadastros);
 		break;
 	case sair:
 		break;
@@ -87,7 +90,7 @@ no* carregarBaseDados(int *qtd, no *cadastros)
 	return(cadastros);
 }
 
-void adicionarRegistros(no** cadastros, int *qtd)
+no* adicionarRegistros(no* cadastros, int *qtd)
 {
 	//FILE *arq = fopen("carros.dat", "a+b");
 	no aux;
@@ -117,13 +120,13 @@ void adicionarRegistros(no** cadastros, int *qtd)
 		{
 			aleatorio = 1000 + (rand() % 9999);
 
-		} while (verificaChave(aleatorio, *cadastros, (*qtd)) != 0 || aleatorio <= 1000 || aleatorio >= 9999);
+		} while (verificaChave(aleatorio, cadastros, (*qtd)) != 0 || aleatorio <= 1000 || aleatorio >= 9999);
 
 		aux.chave = aleatorio;
 
-		salvarNovoArquivo(aux, cadastros, qtd);
+		cadastros = salvarNovoArquivo(aux, cadastros, qtd);
 
-		printf("\n Deseja cadastrar outro veiculo?");
+		printf("\n Deseja cadastrar outro veiculo?\n");
 		printf(" 1. SIM;\n");
 		printf(" 2. NAO;\n\n");
 		printf(" Opcao: ");
@@ -131,9 +134,11 @@ void adicionarRegistros(no** cadastros, int *qtd)
 
 	} while (op != 2);
 
+	return (cadastros);
+
 }
 
-void salvarNovoArquivo(no novo, no **cadastros, int *qtd)
+no* salvarNovoArquivo(no novo, no *cadastros, int *qtd)
 {
 	FILE *arquivo = fopen("database.dat", "wb");
 	int i;
@@ -149,7 +154,7 @@ void salvarNovoArquivo(no novo, no **cadastros, int *qtd)
 
 	fclose(arquivo);
 
-	//carregarBaseDados(qtd, cadastros);
+	return(carregarBaseDados(qtd, cadastros));
 
 }
 
@@ -161,4 +166,38 @@ int verificaChave(int x, no* cadastrados, int tam)
 			return 1;
 	}
 	return 0;
+}
+
+void impressoes(no* cadastros)
+{
+	menuImpressao opcao;
+
+	system("cls");
+
+	printf("----- Menu Impressao -----\n\n");
+	printf("1. Imprimir todos por chave primaria ordenada;\n");
+	printf("2. Imprimir todos ordenado pelo nome do carro;\n");
+	printf("3. Imprimir todos por categoria ordenados pela chave;\n");
+	printf("4. Imprimir todos por categoria ordenados pelo nome do carro\n;");
+	printf("5. Imprimir arquivo;\n\n");
+	printf("Opcao: ");
+	scanf("%i", &opcao);
+
+	switch (opcao)
+	{
+	case chaveOrdenada:
+		break;
+	case nomeOrdenado:
+		break;
+	case categoriaChaveOrdenado:
+		break;
+	case categoriaNomeOrdenado:
+		break;
+	case imprimirArquivo:
+		break;
+	default:
+		break;
+	}
+
+	
 }
