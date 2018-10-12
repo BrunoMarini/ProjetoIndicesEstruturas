@@ -169,7 +169,7 @@ no* salvarNovoArquivo(no novo, no *cadastros, int *qtd)
 
 void impressoes(no* cadastros, listaDenso* lista, int qtd)
 {
-	int i;
+	int i, j;
 	int posicao;
 	menuImpressao opcao;
 
@@ -184,18 +184,26 @@ void impressoes(no* cadastros, listaDenso* lista, int qtd)
 	printf("Opcao: ");
 	scanf("%i", &opcao);
 
+	system("cls");
+
 	switch (opcao)
 	{
 	case chaveOrdenada:
 
-		printf("Chave  Nome Carro  Montadora  Consumo  Peso");
+		printf(" Chave  Nome Carro      Montadora       Consumo  Peso\n\n");
 
 		for (i = 0; i < qtd; i++)
 		{
 			posicao = lista[i].posicao;
 
-			printf("%i %s %s %.2f %i\n", cadastros[posicao].chave, cadastros[posicao].nomeCarro, cadastros[posicao].montadora, 
-				cadastros[posicao].consumo, cadastros[posicao].peso);
+			printf(" %i   ", cadastros[posicao].chave);
+			printf("%s ", cadastros[posicao].nomeCarro);
+			for (j = 15 - strlen(cadastros[posicao].nomeCarro); j > 0; j--) printf(" ");
+			printf("%s ", cadastros[posicao].montadora);
+			for (j = 15 - strlen(cadastros[posicao].montadora); j > 0; j--) printf(" ");
+			if (cadastros[posicao].consumo < 10) printf("0");
+			printf("%.2f ", cadastros[posicao].consumo);
+			printf("   %i\n", cadastros[posicao].peso);
 		}
 
 		break;
@@ -207,9 +215,19 @@ void impressoes(no* cadastros, listaDenso* lista, int qtd)
 		break;
 	case imprimirArquivo:
 
+		printf(" Chave  Nome Carro      Montadora       Consumo  Peso\n\n");
+
 		for (i = 0; i < qtd; i++)
-			printf("%i %s %s %.2f %i\n", cadastros[i].chave, cadastros[i].nomeCarro, cadastros[i].montadora,
-				cadastros[i].consumo, cadastros[i].peso);
+		{
+			printf(" %i   ", cadastros[i].chave);
+			printf("%s ", cadastros[i].nomeCarro);
+			for (j = 15 - strlen(cadastros[i].nomeCarro); j > 0; j--) printf(" ");
+			printf("%s ", cadastros[i].montadora);
+			for (j = 15 - strlen(cadastros[i].montadora); j > 0; j--) printf(" ");
+			if (cadastros[i].consumo < 10) printf("0");
+			printf("%.2f ", cadastros[i].consumo);
+			printf("   %i\n", cadastros[i].peso);
+		}
 
 		break;
 	default:
@@ -256,7 +274,7 @@ void bubble(listaDenso lista[], int tam)
 	for (i = 0; i < tam - 1 && teste; i++)
 	{
 		teste = 0;
-		
+
 		for (j = 0; j < tam - i - 1; j++)
 		{
 			if (lista[j].chave > lista[j + 1].chave)
@@ -267,7 +285,7 @@ void bubble(listaDenso lista[], int tam)
 
 				lista[j].chave = lista[j + 1].chave;
 				lista[j].posicao = lista[j + 1].posicao;
-				
+
 				lista[j + 1].chave = aux.chave;
 				lista[j + 1].posicao = aux.posicao;
 			}
