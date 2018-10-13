@@ -33,8 +33,9 @@ no* carregarBaseDados(int*, no*);
 no* modificarRegistro(no*, listaDenso*, int);
 no* eliminarRegistro(no*, listaDenso*, int*);
 listaDenso* criarIndiceDenso(int, no*, listaDenso*);
-void impressoes(no*, listaDenso*, int, int, int*, char[5][50], int[], int[]);
-void catChaveOrd(no*, int[], int*, int, char[5][50]);
+void impressoes(no*, listaDenso*, int, int, int*, char[5][50], int[], int[], int[], int[]);
+void catAlfabetoOrd(no*, int[], int*, int, char[5][50]);
+void catChaveOrd(no*, int[], int[], int, char[5][50]);
 void consultarRegistro(no*, listaDenso*, int);
 void bubble(listaDenso[], int);
 int buscaBinaria(listaDenso*, int, int);
@@ -49,14 +50,14 @@ void main()
 	listaDenso *indiceDenso = NULL;
 	int qtdCadastros, count, posicao;
 	int *ordemAlfabetica = NULL, pri;
-	int pri_cat[5], catNome[100];
+	int pri_cat_alfabetico[5], pri_cat_chave[5], catNome[100], catChave[100];
 	char montadoras[5][50] = { "Volkswagen", "Chevrolet", "Ford", "Fiat", "Hyundai" };
 
 	cadastros = carregarBaseDados(&qtdCadastros, cadastros);
 	indiceDenso = criarIndiceDenso(qtdCadastros, cadastros, indiceDenso);
 	ordemAlfabetica = tabelaInversa(ordemAlfabetica, &pri, cadastros, qtdCadastros);
-	catChaveOrd(cadastros, pri_cat, catNome, qtdCadastros, montadoras);
-
+	catAlfabetoOrd(cadastros, pri_cat_alfabetico, catNome, qtdCadastros, montadoras);
+	catChaveOrd(cadastros, pri_cat_chave, catChave, qtdCadastros, montadoras);
 
 	do
 	{
@@ -79,22 +80,23 @@ void main()
 		case alterarRegistro:
 			cadastros = modificarRegistro(cadastros, indiceDenso, qtdCadastros);
 			ordemAlfabetica = tabelaInversa(ordemAlfabetica, &pri, cadastros, qtdCadastros);
-			catChaveOrd(cadastros, pri_cat, catNome, qtdCadastros, montadoras);
+			catAlfabetoOrd(cadastros, pri_cat_alfabetico, catNome, qtdCadastros, montadoras);
 			break;
 		case apagarRegistro:
 			cadastros = eliminarRegistro(cadastros, indiceDenso, &qtdCadastros);
 			indiceDenso = criarIndiceDenso(qtdCadastros, cadastros, indiceDenso);
 			ordemAlfabetica = tabelaInversa(ordemAlfabetica, &pri, cadastros, qtdCadastros);
-			catChaveOrd(cadastros, pri_cat, catNome, qtdCadastros, montadoras);
+			catAlfabetoOrd(cadastros, pri_cat_alfabetico, catNome, qtdCadastros, montadoras);
 			break;
 		case inserirRegistro:
 			cadastros = adicionarRegistros(cadastros, &qtdCadastros);
 			indiceDenso = criarIndiceDenso(qtdCadastros, cadastros, indiceDenso);
 			ordemAlfabetica = tabelaInversa(ordemAlfabetica, &pri, cadastros, qtdCadastros);
-			catChaveOrd(cadastros, pri_cat, catNome, qtdCadastros, montadoras);
+			catAlfabetoOrd(cadastros, pri_cat_alfabetico, catNome, qtdCadastros, montadoras);
 			break;
 		case impressao:
-			impressoes(cadastros, indiceDenso, qtdCadastros, pri, ordemAlfabetica, montadoras, pri_cat, catNome);
+			impressoes(cadastros, indiceDenso, qtdCadastros, pri, ordemAlfabetica, montadoras, 
+				pri_cat_alfabetico, pri_cat_chave, catNome, catChave);
 			break;
 		case sair:
 			break;
@@ -310,7 +312,8 @@ no* modificarRegistro(no* cadastros, listaDenso* indice, int qtd)
 
 }
 
-void impressoes(no* cadastros, listaDenso* lista, int qtd, int pri, int *tabelaInversaAlfabeto, char montadoras[5][50], int pri_cat[], int catNome[])
+void impressoes(no* cadastros, listaDenso* lista, int qtd, int pri,	int *tabelaInversaAlfabeto, 
+	char montadoras[5][50], int pri_cat_alfabeto[], int pri_cat_chave[], int catNome[], int catChave[])
 {
 	int i, j, po;
 	int posicao;
@@ -374,6 +377,28 @@ void impressoes(no* cadastros, listaDenso* lista, int qtd, int pri, int *tabelaI
 
 		break;
 	case categoriaChaveOrdenado:
+
+		for (i = 0; i < 5; i++)
+		{
+			printf("\n\n --------------  %s  --------------\n\n", montadoras[i]);
+			printf(" Chave  Nome Carro      Consumo  Peso\n\n");
+
+			posicao = pri_cat_chave[i];
+
+			do
+			{
+				printf(" %i   ", cadastros[posicao].chave);
+				printf("%s ", cadastros[posicao].nomeCarro);
+				for (j = 15 - strlen(cadastros[posicao].nomeCarro); j > 0; j--) printf(" ");
+				if (cadastros[posicao].consumo < 10) printf("0");
+				printf("%.2f ", cadastros[posicao].consumo);
+				printf("   %i\n", cadastros[posicao].peso);
+				posicao = catChave[posicao];
+
+			} while (posicao != -1);
+
+		}
+
 		break;
 	case categoriaNomeOrdenado:
 
@@ -382,7 +407,7 @@ void impressoes(no* cadastros, listaDenso* lista, int qtd, int pri, int *tabelaI
 			printf("\n\n --------------  %s  --------------\n\n", montadoras[i]);
 			   printf(" Chave  Nome Carro      Consumo  Peso\n\n");
 
-			posicao = pri_cat[i];
+			posicao = pri_cat_alfabeto[i];
 
 			do
 			{
@@ -629,7 +654,7 @@ int* tabelaInversa(int *ordem, int *pri, no* cadastros, int qtd)
 	return (ordem);
 }
 
-void catChaveOrd(no* cadastros, int pri_cat[], int *cadas, int qtd, char montadoras[5][50])
+void catAlfabetoOrd(no* cadastros, int pri_cat[], int *cadas, int qtd, char montadoras[5][50])
 {
 	int count[5] = { 0 };
 	int i, j;
@@ -725,6 +750,116 @@ void catChaveOrd(no* cadastros, int pri_cat[], int *cadas, int qtd, char montado
 	for (i = 0; i < countMont[3]; i++)
 		cadas[mont4[i].posicao] = mont4[i + 1].posicao;
 	
+	cadas[mont4[i - 1].posicao] = (-1);
+
+	for (i = 0; i < countMont[4]; i++)
+		cadas[mont5[i].posicao] = mont5[i + 1].posicao;
+
+	cadas[mont5[i - 1].posicao] = (-1);
+
+	free(mont1);
+	free(mont2);
+	free(mont3);
+	free(mont4);
+	free(mont5);
+}
+
+void catChaveOrd(no* cadastros, int pri_cat[], int *cadas, int qtd, char montadoras[5][50])
+{
+	int count[5] = { 0 };
+	int i, j;
+	int countMont[5] = { 0 };
+
+	for (i = 0; i < 100; i++)
+		cadas[i] = -1;
+
+
+	listaDenso *mont1, *mont2, *mont3, *mont4, *mont5;
+
+	for (i = 0; i < qtd; i++)
+	{
+		if (strcmp(cadastros[i].montadora, montadoras[0]) == 0)
+			count[0]++;
+		else if (strcmp(cadastros[i].montadora, montadoras[1]) == 0)
+			count[1]++;
+		else if (strcmp(cadastros[i].montadora, montadoras[2]) == 0)
+			count[2]++;
+		else if (strcmp(cadastros[i].montadora, montadoras[3]) == 0)
+			count[3]++;
+		else if (strcmp(cadastros[i].montadora, montadoras[4]) == 0)
+			count[4]++;
+	}
+
+	mont1 = (listaDenso*)malloc(count[0] * sizeof(listaDenso));
+	mont2 = (listaDenso*)malloc(count[1] * sizeof(listaDenso));
+	mont3 = (listaDenso*)malloc(count[2] * sizeof(listaDenso));
+	mont4 = (listaDenso*)malloc(count[3] * sizeof(listaDenso));
+	mont5 = (listaDenso*)malloc(count[4] * sizeof(listaDenso));
+
+	for (i = 0; i < qtd; i++)
+	{
+		if (strcmp(cadastros[i].montadora, montadoras[0]) == 0) //VOLKSWAGEN
+		{
+			mont1[countMont[0]].chave = cadastros[i].chave;
+			mont1[countMont[0]].posicao = i;
+			countMont[0]++;
+		}
+		else if (strcmp(cadastros[i].montadora, montadoras[1]) == 0) //CHEVROLET
+		{
+			mont2[countMont[1]].chave = cadastros[i].chave;
+			mont2[countMont[1]].posicao = i;
+			countMont[1]++;
+		}
+		else if (strcmp(cadastros[i].montadora, montadoras[2]) == 0) //FORD
+		{
+			mont3[countMont[2]].chave = cadastros[i].chave;
+			mont3[countMont[2]].posicao = i;
+			countMont[2]++;
+		}
+		else if (strcmp(cadastros[i].montadora, montadoras[3]) == 0) //FIAT
+		{
+			mont4[countMont[3]].chave = cadastros[i].chave;
+			mont4[countMont[3]].posicao = i;
+			countMont[3]++;
+		}
+		else if (strcmp(cadastros[i].montadora, montadoras[4]) == 0) //HYUNDAI
+		{
+			mont5[countMont[4]].chave = cadastros[i].chave;
+			mont5[countMont[4]].posicao = i;
+			countMont[4]++;
+		}
+	}
+
+	bubble(mont1, countMont[0]);
+	bubble(mont2, countMont[1]);
+	bubble(mont3, countMont[2]);
+	bubble(mont4, countMont[3]);
+	bubble(mont5, countMont[4]);
+
+	pri_cat[0] = mont1[0].posicao;
+	pri_cat[1] = mont2[0].posicao;
+	pri_cat[2] = mont3[0].posicao;
+	pri_cat[3] = mont4[0].posicao;
+	pri_cat[4] = mont5[0].posicao;
+
+	for (i = 0; i < countMont[0]; i++)
+		cadas[mont1[i].posicao] = mont1[i + 1].posicao;
+
+	cadas[mont1[i - 1].posicao] = (-1);
+
+	for (i = 0; i < countMont[1]; i++)
+		cadas[mont2[i].posicao] = mont2[i + 1].posicao;
+
+	cadas[mont2[i - 1].posicao] = (-1);
+
+	for (i = 0; i < countMont[2]; i++)
+		cadas[mont3[i].posicao] = mont3[i + 1].posicao;
+
+	cadas[mont3[i - 1].posicao] = (-1);
+
+	for (i = 0; i < countMont[3]; i++)
+		cadas[mont4[i].posicao] = mont4[i + 1].posicao;
+
 	cadas[mont4[i - 1].posicao] = (-1);
 
 	for (i = 0; i < countMont[4]; i++)
