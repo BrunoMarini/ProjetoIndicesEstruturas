@@ -1,4 +1,5 @@
 #define _CRT_SECURE_NO_WARNINGS
+#define _CRT_NONSTDC_NO_DEPRECATE
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -21,16 +22,22 @@ typedef struct {
 	int posicao;
 } listaDenso;
 
+typedef struct {
+	int posicao;
+	char nome[50];
+} tabInv;
+
 no* salvarNovoArquivo(no, no*, int*);
 no* adicionarRegistros(no*, int*);
 no* carregarBaseDados(int*, no*);
 no* modificarRegistro(no*, listaDenso*, int);
 no* eliminarRegistro(no*, listaDenso*, int*);
 listaDenso* criarIndiceDenso(int, no*, listaDenso*);
-void impressoes(no*, listaDenso*, int qtd);
+void impressoes(no*, listaDenso*, int, int, int*);
 void consultarRegistro(no*, listaDenso*, int);
 void bubble(listaDenso[], int);
 int buscaBinaria(listaDenso*, int, int);
+int* tabelaInversa(int*, int*, no*, int);
 
 int verificaChave(int, no*, int);
 
@@ -39,46 +46,55 @@ void main()
 	menuPrincipal opcao;
 	no *cadastros = NULL;
 	listaDenso *indiceDenso = NULL;
-	int qtdCadastros;
+	int qtdCadastros, count, posicao;
+	int *ordemAlfabetica = NULL, pri;
 
 	cadastros = carregarBaseDados(&qtdCadastros, cadastros);
 	indiceDenso = criarIndiceDenso(qtdCadastros, cadastros, indiceDenso);
+	ordemAlfabetica = tabelaInversa(ordemAlfabetica, &pri, cadastros, qtdCadastros);
 
-	printf("-------------------- Menu --------------------\n");
-	printf(" 1. Consultar um registro;\n");
-	printf(" 2. ALterar/Atualizar campo(s) de um registro;\n");
-	printf(" 3. Eliminar um registro do arquivo;\n");
-	printf(" 4. Inserir um registro no arquivo;\n");
-	printf(" 5. Impressao;\n");
-	printf(" 6. Sair;\n\n");
-	printf(" Opcao desejada: ");
-	scanf("%d", &opcao);
-
-	switch (opcao)
+	do
 	{
-	case consultarRegistros:
-		consultarRegistro(cadastros, indiceDenso, qtdCadastros);
-		break;
-	case alterarRegistro:
-		cadastros = modificarRegistro(cadastros, indiceDenso, qtdCadastros);
-		break;
-	case apagarRegistro:
-		cadastros = eliminarRegistro(cadastros, indiceDenso, &qtdCadastros);
-		break;
-	case inserirRegistro:
-		cadastros = adicionarRegistros(cadastros, &qtdCadastros);
-		indiceDenso = criarIndiceDenso(qtdCadastros, cadastros, indiceDenso);
-		break;
-	case impressao:
-		impressoes(cadastros, indiceDenso, qtdCadastros);
-		break;
-	case sair:
-		break;
-	default:
-		break;
-	}
 
+		printf("-------------------- Menu --------------------\n");
+		printf(" 1. Consultar um registro;\n");
+		printf(" 2. ALterar/Atualizar campo(s) de um registro;\n");
+		printf(" 3. Eliminar um registro do arquivo;\n");
+		printf(" 4. Inserir um registro no arquivo;\n");
+		printf(" 5. Impressao;\n");
+		printf(" 6. Sair;\n\n");
+		printf(" Opcao desejada: ");
+		scanf("%d", &opcao);
 
+		switch (opcao)
+		{
+		case consultarRegistros:
+			consultarRegistro(cadastros, indiceDenso, qtdCadastros);
+			break;
+		case alterarRegistro:
+			cadastros = modificarRegistro(cadastros, indiceDenso, qtdCadastros);
+			ordemAlfabetica = tabelaInversa(ordemAlfabetica, &pri, cadastros, qtdCadastros);
+			break;
+		case apagarRegistro:
+			cadastros = eliminarRegistro(cadastros, indiceDenso, &qtdCadastros);
+			indiceDenso = criarIndiceDenso(qtdCadastros, cadastros, indiceDenso);
+			ordemAlfabetica = tabelaInversa(ordemAlfabetica, &pri, cadastros, qtdCadastros);
+			break;
+		case inserirRegistro:
+			cadastros = adicionarRegistros(cadastros, &qtdCadastros);
+			indiceDenso = criarIndiceDenso(qtdCadastros, cadastros, indiceDenso);
+			ordemAlfabetica = tabelaInversa(ordemAlfabetica, &pri, cadastros, qtdCadastros);
+			break;
+		case impressao:
+			impressoes(cadastros, indiceDenso, qtdCadastros, pri, ordemAlfabetica);
+			break;
+		case sair:
+			break;
+		default:
+			break;
+		}
+
+	} while (opcao != 6);
 
 	system("pause");
 }
@@ -110,7 +126,7 @@ no* adicionarRegistros(no* cadastros, int *qtd)
 {
 	//FILE *arq = fopen("carros.dat", "a+b");
 	no aux;
-	int aleatorio, op;
+	int aleatorio, op, i;
 
 	system("cls");
 
@@ -123,8 +139,16 @@ no* adicionarRegistros(no* cadastros, int *qtd)
 		printf("Digite o nome do carro: ");
 		fgets(aux.nomeCarro, 50, stdin);
 
+		for (i = 0; i < strlen(aux.nomeCarro); i++)
+			if (aux.nomeCarro[i] == '\n')
+				aux.nomeCarro[i] = '\0';
+
 		printf("Digite a montadora: ");
 		fgets(aux.montadora, 50, stdin);
+
+		for (i = 0; i < strlen(aux.montadora); i++)
+			if (aux.montadora[i] == '\n')
+				aux.montadora[i] = '\0';
 
 		printf("Digite o consumo do veiculo: ");
 		scanf("%f", &aux.consumo);
@@ -207,6 +231,7 @@ no* modificarRegistro(no* cadastros, listaDenso* indice, int qtd)
 		for (j = 15 - strlen(cadastros[posicao].montadora); j > 0; j--) printf(" ");
 		if (cadastros[posicao].consumo < 10) printf("0");
 		printf("%.2f ", cadastros[posicao].consumo);
+		if (cadastros[posicao].peso < 1000) printf("0");
 		printf("   %i\n", cadastros[posicao].peso);
 
 		printf("\nDeseja alterar o nome do carro?\n\n");
@@ -277,7 +302,7 @@ no* modificarRegistro(no* cadastros, listaDenso* indice, int qtd)
 
 }
 
-void impressoes(no* cadastros, listaDenso* lista, int qtd)
+void impressoes(no* cadastros, listaDenso* lista, int qtd, int pri, int *tabelaInversaAlfabeto)
 {
 	int i, j;
 	int posicao;
@@ -318,6 +343,28 @@ void impressoes(no* cadastros, listaDenso* lista, int qtd)
 
 		break;
 	case nomeOrdenado:
+		
+		printf(" Chave  Nome Carro      Montadora       Consumo  Peso\n\n");
+
+		posicao = pri;
+		i = qtd;
+
+		while (i > 0)
+		{
+				
+
+				printf(" %i   ", cadastros[posicao].chave);
+				printf("%s ", cadastros[posicao].nomeCarro);
+				for (j = 15 - strlen(cadastros[posicao].nomeCarro); j > 0; j--) printf(" ");
+				printf("%s ", cadastros[posicao].montadora);
+				for (j = 15 - strlen(cadastros[posicao].montadora); j > 0; j--) printf(" ");
+				if (cadastros[posicao].consumo < 10) printf("0");
+				printf("%.2f ", cadastros[posicao].consumo);
+				printf("   %i\n", cadastros[posicao].peso);
+				
+				posicao = tabelaInversaAlfabeto[posicao];
+				i--;
+		}
 		break;
 	case categoriaChaveOrdenado:
 		break;
@@ -445,6 +492,34 @@ void bubble(listaDenso lista[], int tam)
 	}
 }
 
+void bubbleString(tabInv lista[], int tam)
+{
+	int i, j;
+	tabInv aux;
+	int teste = 1;
+
+	for (i = 0; i < tam - 1 && teste; i++)
+	{
+		teste = 0;
+
+		for (j = 0; j < tam - i - 1; j++)
+		{
+			if (strcmp(strlwr(lista[j].nome), strlwr(lista[j + 1].nome)) > 0)
+			{
+				teste = 1;
+				strcpy(aux.nome, lista[j].nome);
+				aux.posicao = lista[j].posicao;
+
+				strcpy(lista[j].nome, lista[j + 1].nome);
+				lista[j].posicao = lista[j + 1].posicao;
+
+				strcpy(lista[j + 1].nome, aux.nome);
+				lista[j + 1].posicao = aux.posicao;
+			}
+		}
+	}
+}
+
 void consultarRegistro(no* cadastros, listaDenso* indice, int qtd)
 {
 	int codigo, posicao, j;
@@ -497,4 +572,30 @@ int buscaBinaria(listaDenso* indice, int tam, int n)
 
 	return (-1);
 
+}
+
+int* tabelaInversa(int *ordem, int *pri, no* cadastros, int qtd)
+{
+	int i;
+	tabInv *aux;
+
+	ordem = (int*)malloc(qtd * sizeof(int));
+	aux = (tabInv*)malloc(qtd * sizeof(tabInv));
+
+	for (i = 0; i < qtd; i++)
+	{
+		strcpy(aux[i].nome, cadastros[i].nomeCarro);
+		aux[i].posicao = i;
+	}
+
+	bubbleString(aux, qtd);
+	
+	for (i = 0; i < qtd; i++)
+	{
+		if (i == 0)
+			*pri = aux[i].posicao;
+		ordem[aux[i].posicao] = aux[i + 1].posicao;
+	}
+
+	return (ordem);
 }
