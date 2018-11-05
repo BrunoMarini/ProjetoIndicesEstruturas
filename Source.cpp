@@ -16,22 +16,20 @@ typedef struct no {
 	no* link;
 }no;
 
-void criar_vazia(no* pri);
-int inserir(int pri,no tab[],int* disp, variavel V);
+void criar_vazia(no* pri[]);
+int inserir(np *pri[],variavel V);
 no* buscar(no* pri[],char nome[]);
-
+int hash(char nome[]);
 
 int main()
 {
-	no* pri[MAX], ende;
-	no tab[DIM];
+	no* pri[MAX], *ende;
 	variavel V;
 	char nome[10];
-	int disp;
 
 	criar_vazia(pri); //ler info para V
 
-	int t = inserir(pri,V);
+	inserir(pri,V);
 
 	ende = buscar(pri,nome);
 
@@ -43,16 +41,13 @@ void criar_vazia(no * pri)
 	for (int i = 0; i < MAX; i++) pri[i] = NULL;
 }
 
-int inserir(int pri, no tab[], int* disp, variavel V)
+int inserir(np *pri[],variavel V)
 {
 	no* novo = (no*)malloc(sizeof(no));
 	int p;
 	if (!novo) return 0;
-	novo = *disp;
-	*disp = tab[*disp].link;
-	tab[novo].info = V //novo->info = V
-	p = Hash(var_nome);
-	tab[novo].link = pri[p];
+	novo->info = V;
+	p = hash(V.var_nome);
 	pri[p] = novo;
 	return 1;
 
@@ -60,10 +55,16 @@ int inserir(int pri, no tab[], int* disp, variavel V)
 
 no* buscar(no* pri[], char nome[])
 {
-	no* x;
-	int p = Hash(nome);
-	x = pri[p];
-	while (x) if (strcmp(x->info.var_nome, nome) == 0) return x;
-	x = x->link;
+	no* address;
+	int p = hash(nome);
+	address = pri[p];
+	while (address) if (strcmp(address->info.var_nome, nome) == 0) return address;
+	address = address->link;
 	return NULL;
+}
+int hash(char nome[])
+{
+	int j = 0, soma = 0;
+	while(nome[i] != '\0') soma += nome[i];
+	return (soma % MAX);
 }
