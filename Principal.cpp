@@ -767,9 +767,6 @@ void catAlfabetoOrd(no* cadastros, int pri_cat[], int *cadas, int qtd, char mont
 	for (i = 0; i < 100; i++)
 		cadas[i] = -1;
 
-
-	tabInv **mont;
-
 	for (i = 0; i < qtd; i++)
 	{
 		if (strcmp(cadastros[i].montadora, montadoras[0]) == 0)
@@ -783,6 +780,8 @@ void catAlfabetoOrd(no* cadastros, int pri_cat[], int *cadas, int qtd, char mont
 		else if (strcmp(cadastros[i].montadora, montadoras[4]) == 0)
 			count[4]++;
 	}
+
+	tabInv *mont[5];
 
 	for(int k=0; k<5; k++) mont[k] = (tabInv*)malloc(count[k] * sizeof(tabInv));
 
@@ -863,7 +862,7 @@ void catChaveOrd(no* cadastros, int pri_cat[], int *cadas, int qtd, char montado
 		cadas[i] = -1;
 
 
-	listaDenso **mont;
+	listaDenso *mont[5];
 
 	for (i = 0; i < qtd; i++)
 	{
