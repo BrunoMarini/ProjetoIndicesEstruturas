@@ -126,6 +126,9 @@ int main()
 		}
 	} while (opcao != 6);
 
+	free(indiceDenso);
+	free(ordemAlfabetica);
+
 	system("pause");
 	return 0;
 }
