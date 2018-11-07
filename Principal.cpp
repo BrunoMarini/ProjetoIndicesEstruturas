@@ -819,7 +819,7 @@ void catAlfabetoOrd(no* cadastros, int pri_cat[], int *cadas, int qtd, char mont
 		}
 	}
 
-	for(int k=0; k<5; k++) bubbleString(mont[k], countMont[0]);
+	for(int k=0; k<5; k++) bubbleString(mont[k], countMont[k]);
 
 	for(int k=0;k<5;k++) pri_cat[k] = mont[k][0].posicao;
 
@@ -849,7 +849,6 @@ void catAlfabetoOrd(no* cadastros, int pri_cat[], int *cadas, int qtd, char mont
 	cadas[mont[4][i - 1].posicao] = (-1);
 
 	for (int k = 0; k < 5; k++)	free(mont[k]);
-	free(mont);
 }
 
 void catChaveOrd(no* cadastros, int pri_cat[], int *cadas, int qtd, char montadoras[5][50])
@@ -914,7 +913,7 @@ void catChaveOrd(no* cadastros, int pri_cat[], int *cadas, int qtd, char montado
 		}
 	}
 
-	for (int k=0; k<5; k++) bubble(mont[k], countMont[0]);
+	for (int k=0; k<5; k++) bubble(mont[k], countMont[k]);
 
 	for (int k = 0; k < 5; k++) pri_cat[k] = mont[k][0].posicao;
 
@@ -944,5 +943,5 @@ void catChaveOrd(no* cadastros, int pri_cat[], int *cadas, int qtd, char montado
 	cadas[mont[4][i - 1].posicao] = (-1);
 
 	for (int k=0; k<5; k++) free(mont[k]);
-	free(mont);
+	//free(mont);
 }
