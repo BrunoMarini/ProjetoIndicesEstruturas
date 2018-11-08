@@ -1,4 +1,4 @@
-﻿/*
+/*
 BRUNO GUILHERME SPIRLANDELI MARINI     17037607
 MARCOS AURELIO TAVARES DE SOUSA FILHO  17042284
 */
@@ -33,7 +33,7 @@ typedef struct {
 } tabInv;
 
 no* salvarNovoArquivo(no, no*, int*);
-no* adicionarRegistros(no*, int*);
+no* adicionarRegistros(no*, int*, char [][50]);
 no* carregarBaseDados(int*, no*);
 no* modificarRegistro(no*, listaDenso*, int);
 no* eliminarRegistro(no*, listaDenso*, int*);
@@ -103,7 +103,7 @@ int main()
 				catAlfabetoOrd(cadastros, pri_cat_alfabetico, catNome, qtdCadastros, montadoras);
 				break;
 			case inserirRegistro:
-				cadastros = adicionarRegistros(cadastros, &qtdCadastros);
+				cadastros = adicionarRegistros(cadastros, &qtdCadastros, montadoras);
 				indiceDenso = criarIndiceDenso(qtdCadastros, cadastros, indiceDenso);
 				ordemAlfabetica = tabelaInversa(ordemAlfabetica, &pri, cadastros, qtdCadastros);
 				catAlfabetoOrd(cadastros, pri_cat_alfabetico, catNome, qtdCadastros, montadoras);
@@ -133,7 +133,7 @@ int main()
 	return 0;
 }
 
-no* carregarBaseDados(int *qtd, no *cadastros) //carrega a base no ponteiro de n�
+no* carregarBaseDados(int *qtd, no *cadastros) //carrega a base no ponteiro de no
 {
 	no aux;
 	int i, qtdCadastros;
@@ -157,7 +157,7 @@ no* carregarBaseDados(int *qtd, no *cadastros) //carrega a base no ponteiro de n
 	return(cadastros);
 }
 
-no* adicionarRegistros(no* cadastros, int *qtd)
+no* adicionarRegistros(no* cadastros, int *qtd, char montadoras[][50])
 {
 	//FILE *arq = fopen("carros.dat", "a+b"); Adiciona uma nova struct carro
 	no aux;
@@ -171,16 +171,55 @@ no* adicionarRegistros(no* cadastros, int *qtd)
 
 		getchar();
 
-		printf("Digite o nome do carro: ");
-		fgets(aux.nomeCarro, 50, stdin);
+		do
+		{
+			printf("Digite o nome do carro: ");
+			fgets(aux.nomeCarro, 50, stdin);
+			if (aux.nomeCarro[0] == '\n') printf("Valor nulo nao eh valido!Digite novamente.\n\n");
+		} while (aux.nomeCarro[0] == '\n');
 
 		for (i = 0; i < strlen(aux.nomeCarro); i++)
 			if (aux.nomeCarro[i] == '\n')
 				aux.nomeCarro[i] = '\0';
 
-		printf("Digite a montadora: ");
-		fgets(aux.montadora, 50, stdin);
+		do
+		{
+			printf("Qual montadora deseja escolher?Insira de acordo com os numeros abaixo:\n");
+			for (int k = 0; k < 5; k++) printf("%i. %s\n", k + 1, montadoras[k]);
+			printf("\nOpcao: ");
+			scanf("%i", &op);
+			op--;
+			if (op < 0 || op > 4)
+			{
+				printf("Nao existe tal valor! Digite novamente!\n");
+				system("pause");
+				printf("\n");
+			}//const char não é permitido!
+			//montadoras[5][50] = { "Volkswagen", "Chevrolet", "Ford", "Fiat", "Hyundai" };
+			else
+			{
+				switch (op)
+				{
+				case 0:
+					strcpy(aux.montadora, "Volkswagen");
+					break;
+				case 1: 
+					strcpy(aux.montadora, "Chevrolet");
+					break;
+				case 2:
+					strcpy(aux.montadora, "Ford");
+					break;
+				case 3:
+					strcpy(aux.montadora, "Fiat");
+					break;
+				case 4:
+					strcpy(aux.montadora, "Hyundai");
+					break;
+				}
+			}
+		} while (op < 0 || op > 4);
 
+		
 		for (i = 0; i < strlen(aux.montadora); i++)
 			if (aux.montadora[i] == '\n')
 				aux.montadora[i] = '\0';
@@ -222,7 +261,7 @@ no* adicionarRegistros(no* cadastros, int *qtd)
 
 }
 
-no* salvarNovoArquivo(no novo, no *cadastros, int *qtd)//adiona elemento em arquivo
+no* salvarNovoArquivo(no novo, no *cadastros, int *qtd)//adiciona elemento em arquivo
 {
 	FILE *arquivo = fopen("database.dat", "wb");
 	int i, sub;
@@ -259,24 +298,10 @@ no* modificarRegistro(no* cadastros, listaDenso* indice, int qtd)
 	system("cls");
 
 	printf("----- Modificar Registro -----\n\n");
-	printf("Digite o codigo que deseja encontrar, conforme a tabela abaixo\n\n");
-
-	for (i = 0; i < qtd; i++)
-	{
-		printf(" %i   ", cadastros[i].chave);
-		printf("%s ", cadastros[i].nomeCarro);
-		for (j = 15 - strlen(cadastros[i].nomeCarro); j > 0; j--) printf(" ");
-		printf("%s ", cadastros[i].montadora);
-		for (j = 15 - strlen(cadastros[i].montadora); j > 0; j--) printf(" ");
-		if (cadastros[i].consumo < 10) printf("0");
-		printf("%.2f ", cadastros[i].consumo);
-		printf("   %i\n", cadastros[i].peso);
-	}
-
-	printf("Opcao: ");
+	printf("Digite o codigo que deseja encontrar (caso queira retornar insira 0)\nOpcao: ");
 	scanf("%i", &codigo);
+	if (codigo == 0) return(cadastros);
 	posicao = buscaBinaria(indice, qtd, codigo);
-
 	if (posicao != -1)
 	{
 		printf("\n Chave  Nome Carro      Montadora       Consumo  Peso\n\n");
@@ -290,7 +315,7 @@ no* modificarRegistro(no* cadastros, listaDenso* indice, int qtd)
 		printf("%.2f ", cadastros[posicao].consumo);
 		if (cadastros[posicao].peso < 1000) printf("0");
 		printf("   %i\n", cadastros[posicao].peso);
-		
+
 		do
 		{
 			printf("\nDeseja alterar o nome do carro?\n\n");
@@ -367,7 +392,7 @@ no* modificarRegistro(no* cadastros, listaDenso* indice, int qtd)
 	}
 	else
 	{
-		printf("Erro! Nao foi encontrado o cadastro de chave %i na base de dados\n", codigo);
+		printf("Erro! Nao foi encontrado o cadastro de chave %i na base de dados. Retornando ao menu...\n", codigo);
 		system("pause");
 		system("cls");
 		return(cadastros);
@@ -783,7 +808,7 @@ void catAlfabetoOrd(no* cadastros, int pri_cat[], int *cadas, int qtd, char mont
 
 	tabInv *mont[5];
 
-	for(int k=0; k<5; k++) mont[k] = (tabInv*)malloc(count[k] * sizeof(tabInv));
+	for (int k = 0; k < 5; k++) mont[k] = (tabInv*)malloc(count[k] * sizeof(tabInv));
 
 	for (i = 0; i < qtd; i++)
 	{
@@ -819,9 +844,9 @@ void catAlfabetoOrd(no* cadastros, int pri_cat[], int *cadas, int qtd, char mont
 		}
 	}
 
-	for(int k=0; k<5; k++) bubbleString(mont[k], countMont[k]);
+	for (int k = 0; k < 5; k++) bubbleString(mont[k], countMont[k]);
 
-	for(int k=0;k<5;k++) pri_cat[k] = mont[k][0].posicao;
+	for (int k = 0; k < 5; k++) pri_cat[k] = mont[k][0].posicao;
 
 	for (i = 0; i < countMont[0]; i++)
 		cadas[mont[0][i].posicao] = mont[0][i + 1].posicao;
@@ -913,7 +938,7 @@ void catChaveOrd(no* cadastros, int pri_cat[], int *cadas, int qtd, char montado
 		}
 	}
 
-	for (int k=0; k<5; k++) bubble(mont[k], countMont[k]);
+	for (int k = 0; k < 5; k++) bubble(mont[k], countMont[k]);
 
 	for (int k = 0; k < 5; k++) pri_cat[k] = mont[k][0].posicao;
 
@@ -942,6 +967,6 @@ void catChaveOrd(no* cadastros, int pri_cat[], int *cadas, int qtd, char montado
 
 	cadas[mont[4][i - 1].posicao] = (-1);
 
-	for (int k=0; k<5; k++) free(mont[k]);
+	for (int k = 0; k < 5; k++) free(mont[k]);
 	//free(mont);
 }
