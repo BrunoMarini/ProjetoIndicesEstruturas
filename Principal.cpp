@@ -1,4 +1,4 @@
-/*
+﻿/*
 BRUNO GUILHERME SPIRLANDELI MARINI     17037607
 MARCOS AURELIO TAVARES DE SOUSA FILHO  17042284
 */
@@ -33,9 +33,9 @@ typedef struct {
 } tabInv;
 
 no* salvarNovoArquivo(no, no*, int*);
-no* adicionarRegistros(no*, int*, char [][50]);
+no* adicionarRegistros(no*, int*, char[][50]);
 no* carregarBaseDados(int*, no*);
-no* modificarRegistro(no*, listaDenso*, int);
+no* modificarRegistro(no*, listaDenso*, int, char[][50]);
 no* eliminarRegistro(no*, listaDenso*, int*);
 listaDenso* criarIndiceDenso(int, no*, listaDenso*);
 void impressoes(no*, listaDenso*, int, int, int*, char[5][50], int[], int[], int[], int[]);
@@ -76,7 +76,7 @@ int main()
 
 		printf("-------------------- Menu --------------------\n");
 		printf(" 1. Consultar um registro;\n");
-		printf(" 2. ALterar/Atualizar campo(s) de um registro;\n");
+		printf(" 2. Alterar/Atualizar campo(s) de um registro;\n");
 		printf(" 3. Eliminar um registro do arquivo;\n");
 		printf(" 4. Inserir um registro no arquivo;\n");
 		printf(" 5. Impressao;\n");
@@ -92,21 +92,24 @@ int main()
 				consultarRegistro(cadastros, indiceDenso, qtdCadastros);
 				break;
 			case alterarRegistro:
-				cadastros = modificarRegistro(cadastros, indiceDenso, qtdCadastros);
+				cadastros = modificarRegistro(cadastros, indiceDenso, qtdCadastros, montadoras);
 				ordemAlfabetica = tabelaInversa(ordemAlfabetica, &pri, cadastros, qtdCadastros);
 				catAlfabetoOrd(cadastros, pri_cat_alfabetico, catNome, qtdCadastros, montadoras);
+				catChaveOrd(cadastros, pri_cat_chave, catChave, qtdCadastros, montadoras);
 				break;
 			case apagarRegistro:
 				cadastros = eliminarRegistro(cadastros, indiceDenso, &qtdCadastros);
 				indiceDenso = criarIndiceDenso(qtdCadastros, cadastros, indiceDenso);
 				ordemAlfabetica = tabelaInversa(ordemAlfabetica, &pri, cadastros, qtdCadastros);
 				catAlfabetoOrd(cadastros, pri_cat_alfabetico, catNome, qtdCadastros, montadoras);
+				catChaveOrd(cadastros, pri_cat_chave, catChave, qtdCadastros, montadoras);
 				break;
 			case inserirRegistro:
 				cadastros = adicionarRegistros(cadastros, &qtdCadastros, montadoras);
 				indiceDenso = criarIndiceDenso(qtdCadastros, cadastros, indiceDenso);
 				ordemAlfabetica = tabelaInversa(ordemAlfabetica, &pri, cadastros, qtdCadastros);
 				catAlfabetoOrd(cadastros, pri_cat_alfabetico, catNome, qtdCadastros, montadoras);
+				catChaveOrd(cadastros, pri_cat_chave, catChave, qtdCadastros, montadoras);
 				break;
 			case impressao:
 				impressoes(cadastros, indiceDenso, qtdCadastros, pri, ordemAlfabetica, montadoras,
@@ -184,7 +187,7 @@ no* adicionarRegistros(no* cadastros, int *qtd, char montadoras[][50])
 
 		do
 		{
-			printf("Qual montadora deseja escolher?Insira de acordo com os numeros abaixo:\n");
+			printf("\nQual montadora deseja escolher?Insira de acordo com os numeros abaixo:\n");
 			for (int k = 0; k < 5; k++) printf("%i. %s\n", k + 1, montadoras[k]);
 			printf("\nOpcao: ");
 			scanf("%i", &op);
@@ -203,7 +206,7 @@ no* adicionarRegistros(no* cadastros, int *qtd, char montadoras[][50])
 				case 0:
 					strcpy(aux.montadora, "Volkswagen");
 					break;
-				case 1: 
+				case 1:
 					strcpy(aux.montadora, "Chevrolet");
 					break;
 				case 2:
@@ -219,7 +222,7 @@ no* adicionarRegistros(no* cadastros, int *qtd, char montadoras[][50])
 			}
 		} while (op < 0 || op > 4);
 
-		
+
 		for (i = 0; i < strlen(aux.montadora); i++)
 			if (aux.montadora[i] == '\n')
 				aux.montadora[i] = '\0';
@@ -288,7 +291,7 @@ no* salvarNovoArquivo(no novo, no *cadastros, int *qtd)//adiciona elemento em ar
 
 }
 
-no* modificarRegistro(no* cadastros, listaDenso* indice, int qtd)
+no* modificarRegistro(no* cadastros, listaDenso* indice, int qtd, char montadoras[][50])
 {
 	int posicao, codigo, op, i, j, peso;
 	char aux[50];
@@ -323,20 +326,28 @@ no* modificarRegistro(no* cadastros, listaDenso* indice, int qtd)
 			scanf("%i", &op);
 			if (op > 2 || op < 1) printf("Digite uma opcao valida!\n");
 		} while (op > 2 || op < 1);
-
-		if (op == 1)
-		{
-			getchar();
-			printf("\nDigite o novo nome ao carro: ");
-			fgets(aux, 50, stdin);
-			for (i = 0; i < strlen(aux); i++)
-				if (aux[i] == '\n')
-					aux[i] = '\0';
-			strcpy(cadastros[posicao].nomeCarro, aux);
-		}
 		do
 		{
-			printf("\nDeseja alterar o nome da montadora?\n\n");
+			if (op == 1)
+			{
+				getchar();
+				printf("\nDigite o novo nome ao carro: ");
+				fgets(aux, 50, stdin);
+				for (i = 0; i < strlen(aux); i++)
+					if (aux[i] == '\n')
+						aux[i] = '\0';
+				if (!strcmp(aux, cadastros[posicao].nomeCarro))	printf("Não eh possivel alterar para o mesmo nome!Insira novamente\n\n");
+				else
+				{
+					strcpy(cadastros[posicao].nomeCarro, aux);
+					op = 0;
+				}
+			}
+		} while (op==1);
+
+		do
+		{
+			printf("\nDeseja alterar a montadora?\n\n");
 			printf("1. Sim;\n2. Nao;\n\nOpcao: ");
 			scanf("%i", &op);
 			if (op > 2 || op < 1) printf("Digite uma opcao valida!\n");
@@ -344,14 +355,52 @@ no* modificarRegistro(no* cadastros, listaDenso* indice, int qtd)
 
 		if (op == 1)
 		{
-			getchar();
+			/*getchar();
 			printf("\nDigite o novo nome a montadora:");
 			fgets(aux, 50, stdin);
 			for (i = 0; i < strlen(aux); i++)
 				if (aux[i] == '\n')
 					aux[i] = '\0';
-			strcpy(cadastros[posicao].montadora, aux);
+			strcpy(cadastros[posicao].montadora, aux);*/
+
+			do
+			{
+				printf("\nQual montadora deseja escolher?Insira de acordo com os numeros abaixo:\n");
+				for (int k = 0; k < 5; k++) printf("%i. %s\n", k + 1, montadoras[k]);
+				printf("\nOpcao: ");
+				scanf("%i", &op);
+				op--;
+				if (op < 0 || op > 4)
+				{
+					printf("Nao existe tal valor! Digite novamente!\n");
+					system("pause");
+					printf("\n");
+				}//const char não é permitido!
+				//montadoras[5][50] = { "Volkswagen", "Chevrolet", "Ford", "Fiat", "Hyundai" };
+				else
+				{
+					switch (op)
+					{
+					case 0:
+						strcpy(cadastros[op].montadora, "Volkswagen");
+						break;
+					case 1:
+						strcpy(cadastros[op].montadora, "Chevrolet");
+						break;
+					case 2:
+						strcpy(cadastros[op].montadora, "Ford");
+						break;
+					case 3:
+						strcpy(cadastros[op].montadora, "Fiat");
+						break;
+					case 4:
+						strcpy(cadastros[op].montadora, "Hyundai");
+						break;
+					}
+				}
+			} while (op < 0 || op > 4);
 		}
+
 
 		do
 		{
@@ -363,9 +412,17 @@ no* modificarRegistro(no* cadastros, listaDenso* indice, int qtd)
 
 		if (op == 1)
 		{
-			printf("\nDigite o novo consumo: ");
-			scanf("%f", &consumo);
-			cadastros[posicao].consumo = consumo;
+			do
+			{
+				printf("\nDigite o novo consumo: ");
+				scanf("%f", &consumo);
+				if (cadastros[posicao].consumo == consumo) printf("Não eh possivel alterar para o mesmo nome!Insira novamente\n\n");
+				else
+				{
+					cadastros[posicao].consumo = consumo;
+					op = 0;
+				}
+			} while (op == 1);
 		}
 
 		do
@@ -378,9 +435,17 @@ no* modificarRegistro(no* cadastros, listaDenso* indice, int qtd)
 
 		if (op == 1)
 		{
-			printf("\nDigite o novo peso: ");
-			scanf("%i", &peso);
-			cadastros[posicao].peso = peso;
+			do
+			{
+				printf("\nDigite o novo peso: ");
+				scanf("%i", &peso);
+				if(cadastros[posicao].peso = peso)printf("Não eh possivel alterar para o mesmo nome!Insira novamente\n\n");
+				else
+				{
+					cadastros[posicao].peso = peso;
+					op = 0;
+				}
+			} while (op == 1);
 		}
 
 		x.chave = -1;
@@ -430,6 +495,7 @@ void impressoes(no* cadastros, listaDenso* lista, int qtd, int pri, int *tabelaI
 	{
 	case chaveOrdenada:
 
+		printf("---Impressao por chave ordenada---\n\n");
 		printf(" Chave  Nome Carro      Montadora       Consumo  Peso\n\n");
 
 		for (i = 0; i < qtd; i++)
@@ -449,6 +515,7 @@ void impressoes(no* cadastros, listaDenso* lista, int qtd, int pri, int *tabelaI
 		break;
 	case nomeOrdenado:
 
+		printf("---Impressao por nome ordenado---\n\n");
 		printf(" Chave  Nome Carro      Montadora       Consumo  Peso\n\n");
 
 		posicao = pri;
@@ -472,6 +539,7 @@ void impressoes(no* cadastros, listaDenso* lista, int qtd, int pri, int *tabelaI
 		break;
 	case categoriaChaveOrdenado:
 
+		printf("---Impressao por categorias (chave ordenada)---");
 		for (i = 0; i < 5; i++)
 		{
 			printf("\n\n --------------  %s  --------------\n\n", montadoras[i]);
@@ -496,6 +564,7 @@ void impressoes(no* cadastros, listaDenso* lista, int qtd, int pri, int *tabelaI
 		break;
 	case categoriaNomeOrdenado:
 
+		printf("---Impressao por categorias (nome ordenado)---");
 		for (i = 0; i < 5; i++)
 		{
 			printf("\n\n --------------  %s  --------------\n\n", montadoras[i]);
@@ -519,7 +588,7 @@ void impressoes(no* cadastros, listaDenso* lista, int qtd, int pri, int *tabelaI
 
 		break;
 	case imprimirArquivo:
-
+		printf("---Impressao do arquivo---\n\n");
 		printf(" Chave  Nome Carro      Montadora       Consumo  Peso\n\n");
 
 		for (i = 0; i < qtd; i++)
@@ -538,7 +607,8 @@ void impressoes(no* cadastros, listaDenso* lista, int qtd, int pri, int *tabelaI
 	default:
 		break;
 	}
-
+	system("pause");
+	system("cls");
 
 }
 
@@ -626,9 +696,15 @@ no* eliminarRegistro(no* cadastros, listaDenso* indice, int *qtd)
 
 		(*qtd)--;
 
+		printf("\nO registro %i foi excluido com sucesso!\n", posicao);
+		system("pause");
+		system("cls");
 		return(salvarNovoArquivo(aux, cadastros, qtd));
 
 	}
+	else printf("\nNada foi modificado!Retornando ao menu...\n");
+	system("pause");
+	system("cls");
 	return (cadastros);
 
 }
@@ -726,15 +802,31 @@ void consultarRegistro(no* cadastros, listaDenso* indice, int qtd)
 			for (j = 15 - strlen(cadastros[posicao].montadora); j > 0; j--) printf(" ");
 			if (cadastros[posicao].consumo < 10) printf("0");
 			printf("%.2f ", cadastros[posicao].consumo);
-			printf("   %i\n", cadastros[posicao].peso);
+			printf("   %i\n\n", cadastros[posicao].peso);
+			system("pause");
+
 		}
 		else
 		{
 			printf("Erro! Nao foi encontrado o cadastro de chave %i na base de dados. Insira outro!\n", codigo);
+			printf("Segue a tabela com os valores possíveis de chave: \n\n");
+
+			for (int i = 0; i < qtd; i++)
+			{
+				printf(" %i   ", cadastros[i].chave);
+				printf("%s ", cadastros[i].nomeCarro);
+				for (j = 15 - strlen(cadastros[i].nomeCarro); j > 0; j--) printf(" ");
+				printf("%s ", cadastros[i].montadora);
+				for (j = 15 - strlen(cadastros[i].montadora); j > 0; j--) printf(" ");
+				if (cadastros[i].consumo < 10) printf("0");
+				printf("%.2f ", cadastros[i].consumo);
+				printf("   %i\n", cadastros[i].peso);
+			}
+
 			system("pause");
 		}
 	} while (posicao == -1);
-
+	system("cls");
 }
 
 int buscaBinaria(listaDenso* indice, int tam, int n)
