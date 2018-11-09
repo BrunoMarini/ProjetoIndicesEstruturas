@@ -1,3 +1,8 @@
+/*
+BRUNO GUILHERME SPIRLANDELI MARINI     17037607
+MARCOS AURELIO TAVARES DE SOUSA FILHO  17042284
+*/
+
 #define _CRT_SECURE_NO_WARNINGS
 #define _CRT_NONSTDC_NO_DEPRECATE
 #include <stdlib.h>
@@ -28,9 +33,9 @@ typedef struct {
 } tabInv;
 
 no* salvarNovoArquivo(no, no*, int*);
-no* adicionarRegistros(no*, int*);
+no* adicionarRegistros(no*, int*, char[][50]);
 no* carregarBaseDados(int*, no*);
-no* modificarRegistro(no*, listaDenso*, int);
+no* modificarRegistro(no*, listaDenso*, int, char[][50]);
 no* eliminarRegistro(no*, listaDenso*, int*);
 listaDenso* criarIndiceDenso(int, no*, listaDenso*);
 void impressoes(no*, listaDenso*, int, int, int*, char[5][50], int[], int[], int[], int[]);
@@ -43,8 +48,9 @@ int* tabelaInversa(int*, int*, no*, int);
 
 int verificaChave(int, no*, int);
 
-void main()
+int main()
 {
+	system("Color F0");
 	menuPrincipal opcao;
 	no *cadastros = NULL;
 	listaDenso *indiceDenso = NULL;
@@ -54,6 +60,12 @@ void main()
 	char montadoras[5][50] = { "Volkswagen", "Chevrolet", "Ford", "Fiat", "Hyundai" };
 
 	cadastros = carregarBaseDados(&qtdCadastros, cadastros);
+	if (!cadastros)
+	{
+		printf("Nao ha base de dados! Armazene uma antes de executar este programa!\n");
+		system("pause");
+		return 0;
+	}
 	indiceDenso = criarIndiceDenso(qtdCadastros, cadastros, indiceDenso);
 	ordemAlfabetica = tabelaInversa(ordemAlfabetica, &pri, cadastros, qtdCadastros);
 	catAlfabetoOrd(cadastros, pri_cat_alfabetico, catNome, qtdCadastros, montadoras);
@@ -64,7 +76,7 @@ void main()
 
 		printf("-------------------- Menu --------------------\n");
 		printf(" 1. Consultar um registro;\n");
-		printf(" 2. ALterar/Atualizar campo(s) de um registro;\n");
+		printf(" 2. Alterar/Atualizar campo(s) de um registro;\n");
 		printf(" 3. Eliminar um registro do arquivo;\n");
 		printf(" 4. Inserir um registro no arquivo;\n");
 		printf(" 5. Impressao;\n");
@@ -72,49 +84,65 @@ void main()
 		printf(" Opcao desejada: ");
 		scanf("%d", &opcao);
 
-		switch (opcao)
+		if (opcao > 0 && opcao < 7)
 		{
-		case consultarRegistros:
-			consultarRegistro(cadastros, indiceDenso, qtdCadastros);
-			break;
-		case alterarRegistro:
-			cadastros = modificarRegistro(cadastros, indiceDenso, qtdCadastros);
-			ordemAlfabetica = tabelaInversa(ordemAlfabetica, &pri, cadastros, qtdCadastros);
-			catAlfabetoOrd(cadastros, pri_cat_alfabetico, catNome, qtdCadastros, montadoras);
-			break;
-		case apagarRegistro:
-			cadastros = eliminarRegistro(cadastros, indiceDenso, &qtdCadastros);
-			indiceDenso = criarIndiceDenso(qtdCadastros, cadastros, indiceDenso);
-			ordemAlfabetica = tabelaInversa(ordemAlfabetica, &pri, cadastros, qtdCadastros);
-			catAlfabetoOrd(cadastros, pri_cat_alfabetico, catNome, qtdCadastros, montadoras);
-			break;
-		case inserirRegistro:
-			cadastros = adicionarRegistros(cadastros, &qtdCadastros);
-			indiceDenso = criarIndiceDenso(qtdCadastros, cadastros, indiceDenso);
-			ordemAlfabetica = tabelaInversa(ordemAlfabetica, &pri, cadastros, qtdCadastros);
-			catAlfabetoOrd(cadastros, pri_cat_alfabetico, catNome, qtdCadastros, montadoras);
-			break;
-		case impressao:
-			impressoes(cadastros, indiceDenso, qtdCadastros, pri, ordemAlfabetica, montadoras, 
-				pri_cat_alfabetico, pri_cat_chave, catNome, catChave);
-			break;
-		case sair:
-			break;
-		default:
-			break;
+			switch (opcao)
+			{
+			case consultarRegistros:
+				consultarRegistro(cadastros, indiceDenso, qtdCadastros);
+				break;
+			case alterarRegistro:
+				cadastros = modificarRegistro(cadastros, indiceDenso, qtdCadastros, montadoras);
+				ordemAlfabetica = tabelaInversa(ordemAlfabetica, &pri, cadastros, qtdCadastros);
+				catAlfabetoOrd(cadastros, pri_cat_alfabetico, catNome, qtdCadastros, montadoras);
+				catChaveOrd(cadastros, pri_cat_chave, catChave, qtdCadastros, montadoras);
+				break;
+			case apagarRegistro:
+				cadastros = eliminarRegistro(cadastros, indiceDenso, &qtdCadastros);
+				indiceDenso = criarIndiceDenso(qtdCadastros, cadastros, indiceDenso);
+				ordemAlfabetica = tabelaInversa(ordemAlfabetica, &pri, cadastros, qtdCadastros);
+				catAlfabetoOrd(cadastros, pri_cat_alfabetico, catNome, qtdCadastros, montadoras);
+				catChaveOrd(cadastros, pri_cat_chave, catChave, qtdCadastros, montadoras);
+				break;
+			case inserirRegistro:
+				cadastros = adicionarRegistros(cadastros, &qtdCadastros, montadoras);
+				indiceDenso = criarIndiceDenso(qtdCadastros, cadastros, indiceDenso);
+				ordemAlfabetica = tabelaInversa(ordemAlfabetica, &pri, cadastros, qtdCadastros);
+				catAlfabetoOrd(cadastros, pri_cat_alfabetico, catNome, qtdCadastros, montadoras);
+				catChaveOrd(cadastros, pri_cat_chave, catChave, qtdCadastros, montadoras);
+				break;
+			case impressao:
+				impressoes(cadastros, indiceDenso, qtdCadastros, pri, ordemAlfabetica, montadoras,
+					pri_cat_alfabetico, pri_cat_chave, catNome, catChave);
+				break;
+			case sair:
+				break;
+			default:
+				break;
+			}
 		}
-
+		else
+		{
+			printf("Nao existe esta opcao! Digite novamente!\n");
+			system("pause");
+			system("cls");
+		}
 	} while (opcao != 6);
 
+	free(indiceDenso);
+	free(ordemAlfabetica);
+
 	system("pause");
+	return 0;
 }
 
-no* carregarBaseDados(int *qtd, no *cadastros)
+no* carregarBaseDados(int *qtd, no *cadastros) //carrega a base no ponteiro de no
 {
 	no aux;
 	int i, qtdCadastros;
 
 	FILE *arquivo = fopen("database.dat", "rb");
+	if (!arquivo) return NULL;
 
 	fread(qtd, sizeof(int), 1, arquivo);
 
@@ -132,9 +160,9 @@ no* carregarBaseDados(int *qtd, no *cadastros)
 	return(cadastros);
 }
 
-no* adicionarRegistros(no* cadastros, int *qtd)
+no* adicionarRegistros(no* cadastros, int *qtd, char montadoras[][50])
 {
-	//FILE *arq = fopen("carros.dat", "a+b");
+	//FILE *arq = fopen("carros.dat", "a+b"); Adiciona uma nova struct carro
 	no aux;
 	int aleatorio, op, i;
 
@@ -146,15 +174,54 @@ no* adicionarRegistros(no* cadastros, int *qtd)
 
 		getchar();
 
-		printf("Digite o nome do carro: ");
-		fgets(aux.nomeCarro, 50, stdin);
+		do
+		{
+			printf("Digite o nome do carro: ");
+			fgets(aux.nomeCarro, 50, stdin);
+			if (aux.nomeCarro[0] == '\n') printf("Valor nulo nao eh valido!Digite novamente.\n\n");
+		} while (aux.nomeCarro[0] == '\n');
 
 		for (i = 0; i < strlen(aux.nomeCarro); i++)
 			if (aux.nomeCarro[i] == '\n')
 				aux.nomeCarro[i] = '\0';
 
-		printf("Digite a montadora: ");
-		fgets(aux.montadora, 50, stdin);
+		do
+		{
+			printf("\nQual montadora deseja escolher?Insira de acordo com os numeros abaixo:\n");
+			for (int k = 0; k < 5; k++) printf("%i. %s\n", k + 1, montadoras[k]);
+			printf("\nOpcao: ");
+			scanf("%i", &op);
+			op--;
+			if (op < 0 || op > 4)
+			{
+				printf("Nao existe tal valor! Digite novamente!\n");
+				system("pause");
+				printf("\n");
+			}//const char não é permitido!
+			 //montadoras[5][50] = { "Volkswagen", "Chevrolet", "Ford", "Fiat", "Hyundai" };
+			else
+			{
+				switch (op)
+				{
+				case 0:
+					strcpy(aux.montadora, "Volkswagen");
+					break;
+				case 1:
+					strcpy(aux.montadora, "Chevrolet");
+					break;
+				case 2:
+					strcpy(aux.montadora, "Ford");
+					break;
+				case 3:
+					strcpy(aux.montadora, "Fiat");
+					break;
+				case 4:
+					strcpy(aux.montadora, "Hyundai");
+					break;
+				}
+			}
+		} while (op < 0 || op > 4);
+
 
 		for (i = 0; i < strlen(aux.montadora); i++)
 			if (aux.montadora[i] == '\n')
@@ -176,11 +243,23 @@ no* adicionarRegistros(no* cadastros, int *qtd)
 
 		cadastros = salvarNovoArquivo(aux, cadastros, qtd);
 
-		printf("\n Deseja cadastrar outro veiculo?\n");
-		printf(" 1. SIM;\n");
-		printf(" 2. NAO;\n\n");
-		printf(" Opcao: ");
-		scanf("%i", &op);
+		do
+		{
+			printf("\n Deseja cadastrar outro veiculo?\n");
+			printf(" 1. Sim;\n");
+			printf(" 2. Nao;\n\n");
+			printf(" Opcao: ");
+			scanf("%i", &op);
+			if (op < 1 || op > 2)
+			{
+				printf("Nao existe esta opcao! Digite novamente!\n");
+				system("pause");
+				system("cls");
+			}
+		} while (op < 1 || op > 2);
+
+		if (op == 2)
+			system("cls");
 
 	} while (op != 2);
 
@@ -188,7 +267,7 @@ no* adicionarRegistros(no* cadastros, int *qtd)
 
 }
 
-no* salvarNovoArquivo(no novo, no *cadastros, int *qtd)
+no* salvarNovoArquivo(no novo, no *cadastros, int *qtd)//adiciona elemento em arquivo
 {
 	FILE *arquivo = fopen("database.dat", "wb");
 	int i, sub;
@@ -200,13 +279,13 @@ no* salvarNovoArquivo(no novo, no *cadastros, int *qtd)
 	}
 	else
 		sub = 0;
-		
+
 	fwrite(qtd, sizeof(int), 1, arquivo);
 
 	for (i = 0; i < ((*qtd) - sub); i++)
 		fwrite(&cadastros[i], sizeof(no), 1, arquivo);
 
-	if(novo.chave != -1)
+	if (novo.chave != -1)
 		fwrite(&novo, sizeof(no), 1, arquivo);
 
 	fclose(arquivo);
@@ -215,7 +294,7 @@ no* salvarNovoArquivo(no novo, no *cadastros, int *qtd)
 
 }
 
-no* modificarRegistro(no* cadastros, listaDenso* indice, int qtd)
+no* modificarRegistro(no* cadastros, listaDenso* indice, int qtd, char montadoras[][50])
 {
 	int posicao, codigo, op, i, j, peso;
 	char aux[50];
@@ -225,13 +304,18 @@ no* modificarRegistro(no* cadastros, listaDenso* indice, int qtd)
 	system("cls");
 
 	printf("----- Modificar Registro -----\n\n");
-	printf("Digite o codigo que deseja encontrar: ");
+	printf("Digite o codigo que deseja encontrar (caso queira retornar insira 0)\nOpcao: ");
 	scanf("%i", &codigo);
-
+	
+	if (codigo == 0)
+		 return(cadastros);
+	
 	posicao = buscaBinaria(indice, qtd, codigo);
-
+	
 	if (posicao != -1)
 	{
+		system("cls");
+
 		printf("\n Chave  Nome Carro      Montadora       Consumo  Peso\n\n");
 
 		printf(" %i   ", cadastros[posicao].chave);
@@ -244,98 +328,227 @@ no* modificarRegistro(no* cadastros, listaDenso* indice, int qtd)
 		if (cadastros[posicao].peso < 1000) printf("0");
 		printf("   %i\n", cadastros[posicao].peso);
 
-		printf("\nDeseja alterar o nome do carro?\n\n");
-		printf("1. Sim;\n2. Nao;\n\nOpcao: ");
-		scanf("%i", &op);
-		
+		do
+		{
+			printf("\nDeseja alterar o nome do carro?\n\n");
+			printf("1. Sim;\n2. Nao;\n\nOpcao: ");
+			scanf("%i", &op);
+			if (op > 2 || op < 1) 
+				printf("Digite uma opcao valida!\n");
+		} while (op > 2 || op < 1);
+
+		do
+		{
+			if (op == 1)
+			{
+				getchar();
+				printf("\nDigite o novo nome ao carro: ");
+				fgets(aux, 50, stdin);
+				for (i = 0; i < strlen(aux); i++)
+					if (aux[i] == '\n')
+						aux[i] = '\0';
+				if (!strcmp(aux, cadastros[posicao].nomeCarro))	
+					printf("Não eh possivel alterar para o mesmo nome! Insira novamente\n\n");
+				else
+				{
+					strcpy(cadastros[posicao].nomeCarro, aux);
+					op = 0;
+				}
+			}
+		} while (op == 1);
+
+		system("cls");
+
+		printf("\n Chave  Nome Carro      Montadora       Consumo  Peso\n\n");
+
+		printf(" %i   ", cadastros[posicao].chave);
+		printf("%s ", cadastros[posicao].nomeCarro);
+		for (j = 15 - strlen(cadastros[posicao].nomeCarro); j > 0; j--) printf(" ");
+		printf("%s ", cadastros[posicao].montadora);
+		for (j = 15 - strlen(cadastros[posicao].montadora); j > 0; j--) printf(" ");
+		if (cadastros[posicao].consumo < 10) printf("0");
+		printf("%.2f ", cadastros[posicao].consumo);
+		if (cadastros[posicao].peso < 1000) printf("0");
+		printf("   %i\n", cadastros[posicao].peso);
+
+		do
+		{
+			printf("\nDeseja alterar a montadora?\n\n");
+			printf("1. Sim;\n2. Nao;\n\nOpcao: ");
+			scanf("%i", &op);
+			if (op > 2 || op < 1) printf("Digite uma opcao valida!\n");
+		} while (op > 2 || op < 1);
+
 		if (op == 1)
 		{
-			getchar();
-			printf("\nDigite o novo nome ao carro: ");
-			fgets(aux, 50, stdin);
-			for (i = 0; i < strlen(aux); i++)
-				if (aux[i] == '\n')
-					aux[i] = '\0';
-			strcpy(cadastros[posicao].nomeCarro, aux);
-		}
-
-		printf("\nDeseja alterar o nome da montadora?\n\n");
-		printf("1. Sim;\n2. Nao;\n\nOpcao: ");
-		scanf("%i", &op);
-
-		if (op == 1)
-		{
-			getchar();
+			/*getchar();
 			printf("\nDigite o novo nome a montadora:");
 			fgets(aux, 50, stdin);
 			for (i = 0; i < strlen(aux); i++)
-				if (aux[i] == '\n')
-					aux[i] = '\0';
-			strcpy(cadastros[posicao].montadora, aux);
+			if (aux[i] == '\n')
+			aux[i] = '\0';
+			strcpy(cadastros[posicao].montadora, aux);*/
+
+			do
+			{
+				printf("\nQual montadora deseja escolher? Insira de acordo com os numeros abaixo:\n");
+				for (int k = 0; k < 5; k++) printf("%i. %s\n", k + 1, montadoras[k]);
+				printf("\nOpcao: ");
+				scanf("%i", &op);
+				op--;
+				if (op < 0 || op > 4)
+				{
+					printf("Nao existe tal valor! Digite novamente!\n");
+					system("pause");
+					printf("\n");
+				}
+				else
+				{
+					switch (op)
+					{
+					case 0:
+						strcpy(cadastros[posicao].montadora, "Volkswagen");
+						break;
+					case 1:
+						strcpy(cadastros[posicao].montadora, "Chevrolet");
+						break;
+					case 2:
+						strcpy(cadastros[posicao].montadora, "Ford");
+						break;
+					case 3:
+						strcpy(cadastros[posicao].montadora, "Fiat");
+						break;
+					case 4:
+						strcpy(cadastros[posicao].montadora, "Hyundai");
+						break;
+					}
+				}
+			} while (op < 0 || op > 4);
 		}
 
-		printf("\nDeseja alterar o consumo do carro?\n\n");
-		printf("1. Sim;\n2. Nao;\n\nOpcao: ");
-		scanf("%i", &op);
+		system("cls");
+
+		printf("\n Chave  Nome Carro      Montadora       Consumo  Peso\n\n");
+
+		printf(" %i   ", cadastros[posicao].chave);
+		printf("%s ", cadastros[posicao].nomeCarro);
+		for (j = 15 - strlen(cadastros[posicao].nomeCarro); j > 0; j--) printf(" ");
+		printf("%s ", cadastros[posicao].montadora);
+		for (j = 15 - strlen(cadastros[posicao].montadora); j > 0; j--) printf(" ");
+		if (cadastros[posicao].consumo < 10) printf("0");
+		printf("%.2f ", cadastros[posicao].consumo);
+		if (cadastros[posicao].peso < 1000) printf("0");
+		printf("   %i\n", cadastros[posicao].peso);
+
+		do
+		{
+			printf("\nDeseja alterar o consumo do carro?\n\n");
+			printf("1. Sim;\n2. Nao;\n\nOpcao: ");
+			scanf("%i", &op);
+			if (op > 2 || op < 1) printf("Digite uma opcao valida!\n");
+		} while (op > 2 || op < 1);
 
 		if (op == 1)
 		{
-			printf("\nDigite o novo consumo: ");
-			scanf("%f", &consumo);
-			cadastros[posicao].consumo = consumo;
+			do
+			{
+				printf("\nDigite o novo consumo: ");
+				scanf("%f", &consumo);
+				if (cadastros[posicao].consumo == consumo) printf("Não eh possivel alterar para o mesmo nome!Insira novamente\n\n");
+				else
+				{
+					cadastros[posicao].consumo = consumo;
+					op = 0;
+				}
+			} while (op == 1);
 		}
 
-		printf("\nDeseja alterar o peso do carro?\n\n");
-		printf("1. Sim;\n2. Nao;\n\nOpcao: ");
-		scanf("%i", &op);
+		system("cls");
+
+		printf("\n Chave  Nome Carro      Montadora       Consumo  Peso\n\n");
+
+		printf(" %i   ", cadastros[posicao].chave);
+		printf("%s ", cadastros[posicao].nomeCarro);
+		for (j = 15 - strlen(cadastros[posicao].nomeCarro); j > 0; j--) printf(" ");
+		printf("%s ", cadastros[posicao].montadora);
+		for (j = 15 - strlen(cadastros[posicao].montadora); j > 0; j--) printf(" ");
+		if (cadastros[posicao].consumo < 10) printf("0");
+		printf("%.2f ", cadastros[posicao].consumo);
+		if (cadastros[posicao].peso < 1000) printf("0");
+		printf("   %i\n", cadastros[posicao].peso);
+
+		do
+		{
+			printf("\nDeseja alterar o peso do carro?\n\n");
+			printf("1. Sim;\n2. Nao;\n\nOpcao: ");
+			scanf("%i", &op);
+			if (op > 2 || op < 1) printf("Digite uma opcao valida!\n");
+		} while (op > 2 || op < 1);
 
 		if (op == 1)
 		{
-			printf("\nDigite o novo peso: ");
-			scanf("%i", &peso);
-			cadastros[posicao].peso = peso;
+			do
+			{
+				printf("\nDigite o novo peso: ");
+				scanf("%i", &peso);
+				if (cadastros[posicao].peso == peso)
+					printf("Não eh possivel alterar para o mesmo peso!Insira novamente\n\n");
+				else
+				{
+					cadastros[posicao].peso = peso;
+					op = 0;
+				}
+			} while (op == 1);
 		}
-		
+
 		x.chave = -1;
 
 		printf("\n\n Atualizado com Sucesso!\n");
-
+		system("cls");
 		return(salvarNovoArquivo(x, cadastros, &qtd));
 
 	}
 	else
 	{
-		printf("ERRO! NAO FOI ENCONTRADO O CADASTRO DE CHAVE %i NA BASE DE DADOS\n", codigo);
+		printf("Erro! Nao foi encontrado o cadastro de chave %i na base de dados. Retornando ao menu...\n", codigo);
+		system("pause");
+		system("cls");
 		return(cadastros);
 	}
-
-
 }
 
-void impressoes(no* cadastros, listaDenso* lista, int qtd, int pri,	int *tabelaInversaAlfabeto, 
+void impressoes(no* cadastros, listaDenso* lista, int qtd, int pri, int *tabelaInversaAlfabeto,
 	char montadoras[5][50], int pri_cat_alfabeto[], int pri_cat_chave[], int catNome[], int catChave[])
 {
 	int i, j, po;
 	int posicao;
 	menuImpressao opcao;
 
-	system("cls");
+	do
+	{
+		system("cls");
 
-	printf("\n----- Menu Impressao -----\n\n");
-	printf("1. Imprimir todos por chave primaria ordenada;\n");
-	printf("2. Imprimir todos ordenado pelo nome do carro;\n");
-	printf("3. Imprimir todos por categoria ordenados pela chave;\n");
-	printf("4. Imprimir todos por categoria ordenados pelo nome do carro;\n");
-	printf("5. Imprimir arquivo;\n\n");
-	printf("Opcao: ");
-	scanf("%i", &opcao);
-
+		printf("\n----- Menu Impressao -----\n\n");
+		printf("1. Imprimir todos por chave primaria ordenada;\n");
+		printf("2. Imprimir todos ordenado pelo nome do carro;\n");
+		printf("3. Imprimir todos por categoria ordenados pela chave;\n");
+		printf("4. Imprimir todos por categoria ordenados pelo nome do carro;\n");
+		printf("5. Imprimir arquivo;\n\n");
+		printf("Opcao: ");
+		scanf("%i", &opcao);
+		if (opcao > 5 || opcao < 1)
+		{
+			printf("Nao existe esta opcao, digite novamente!\n");
+			system("pause");
+		}
+	} while (opcao > 5 || opcao < 1);
 	system("cls");
 
 	switch (opcao)
 	{
 	case chaveOrdenada:
 
+		printf("---Impressao por chave ordenada---\n\n");
 		printf(" Chave  Nome Carro      Montadora       Consumo  Peso\n\n");
 
 		for (i = 0; i < qtd; i++)
@@ -354,7 +567,8 @@ void impressoes(no* cadastros, listaDenso* lista, int qtd, int pri,	int *tabelaI
 
 		break;
 	case nomeOrdenado:
-		
+
+		printf("---Impressao por nome ordenado---\n\n");
 		printf(" Chave  Nome Carro      Montadora       Consumo  Peso\n\n");
 
 		posicao = pri;
@@ -362,22 +576,23 @@ void impressoes(no* cadastros, listaDenso* lista, int qtd, int pri,	int *tabelaI
 
 		while (i > 0)
 		{
-				printf(" %i   ", cadastros[posicao].chave);
-				printf("%s ", cadastros[posicao].nomeCarro);
-				for (j = 15 - strlen(cadastros[posicao].nomeCarro); j > 0; j--) printf(" ");
-				printf("%s ", cadastros[posicao].montadora);
-				for (j = 15 - strlen(cadastros[posicao].montadora); j > 0; j--) printf(" ");
-				if (cadastros[posicao].consumo < 10) printf("0");
-				printf("%.2f ", cadastros[posicao].consumo);
-				printf("   %i\n", cadastros[posicao].peso);
-				
-				posicao = tabelaInversaAlfabeto[posicao];
-				i--;
+			printf(" %i   ", cadastros[posicao].chave);
+			printf("%s ", cadastros[posicao].nomeCarro);
+			for (j = 15 - strlen(cadastros[posicao].nomeCarro); j > 0; j--) printf(" ");
+			printf("%s ", cadastros[posicao].montadora);
+			for (j = 15 - strlen(cadastros[posicao].montadora); j > 0; j--) printf(" ");
+			if (cadastros[posicao].consumo < 10) printf("0");
+			printf("%.2f ", cadastros[posicao].consumo);
+			printf("   %i\n", cadastros[posicao].peso);
+
+			posicao = tabelaInversaAlfabeto[posicao];
+			i--;
 		}
 
 		break;
 	case categoriaChaveOrdenado:
 
+		printf("---Impressao por categorias (chave ordenada)---");
 		for (i = 0; i < 5; i++)
 		{
 			printf("\n\n --------------  %s  --------------\n\n", montadoras[i]);
@@ -402,10 +617,11 @@ void impressoes(no* cadastros, listaDenso* lista, int qtd, int pri,	int *tabelaI
 		break;
 	case categoriaNomeOrdenado:
 
+		printf("---Impressao por categorias (nome ordenado)---");
 		for (i = 0; i < 5; i++)
 		{
 			printf("\n\n --------------  %s  --------------\n\n", montadoras[i]);
-			   printf(" Chave  Nome Carro      Consumo  Peso\n\n");
+			printf(" Chave  Nome Carro      Consumo  Peso\n\n");
 
 			posicao = pri_cat_alfabeto[i];
 
@@ -425,7 +641,7 @@ void impressoes(no* cadastros, listaDenso* lista, int qtd, int pri,	int *tabelaI
 
 		break;
 	case imprimirArquivo:
-
+		printf("---Impressao do arquivo---\n\n");
 		printf(" Chave  Nome Carro      Montadora       Consumo  Peso\n\n");
 
 		for (i = 0; i < qtd; i++)
@@ -444,7 +660,8 @@ void impressoes(no* cadastros, listaDenso* lista, int qtd, int pri,	int *tabelaI
 	default:
 		break;
 	}
-
+	system("pause");
+	system("cls");
 
 }
 
@@ -471,15 +688,52 @@ no* eliminarRegistro(no* cadastros, listaDenso* indice, int *qtd)
 	int posicao, codigo, j, i;
 	no aux;
 	aux.chave = -1;
-	system("cls");
+	do
+	{
+		system("cls");
 
-	printf("----- Eliminar Registro -----\n\n");
-	printf("Digite o codigo que deseja do registro a eliminar: ");
-	scanf("%i", &codigo);
+		printf("----- Eliminar Registro -----\n\n");
+		printf("Digite a chave do registro que deseja eliminar, ou digite 0 para sair, 1 para exibir registros:\n\n");
+		
+		printf("Opcao: ");
+		scanf("%i", &codigo);
 
-	posicao = buscaBinaria(indice, *qtd, codigo);
+		if (codigo == 1)
+		{
+			printf("\n Chave  Nome Carro      Montadora       Consumo  Peso\n\n");
 
-	printf(" Chave  Nome Carro      Montadora       Consumo  Peso\n\n");
+			for (i = 0; i < *qtd; i++)
+			{
+				printf(" %i   ", cadastros[i].chave);
+				printf("%s ", cadastros[i].nomeCarro);
+				for (j = 15 - strlen(cadastros[i].nomeCarro); j > 0; j--) printf(" ");
+				printf("%s ", cadastros[i].montadora);
+				for (j = 15 - strlen(cadastros[i].montadora); j > 0; j--) printf(" ");
+				if (cadastros[i].consumo < 10) printf("0");
+				printf("%.2f ", cadastros[i].consumo);
+				printf("   %i\n", cadastros[i].peso);
+			}
+
+			printf("\n Digite a chave que deseja eliminar ou 0 para sair: ");
+			scanf("%i", &codigo);
+		}
+
+		if (codigo == 0)
+		{
+			system("cls");
+			return(cadastros);
+		}
+
+		posicao = buscaBinaria(indice, *qtd, codigo);
+		
+		if (posicao == -1)
+		{
+			printf("Nao existe esta chave! Insira novamente!\n");
+			system("pause");
+		}
+	} while (posicao == -1);
+
+	printf("\n\nEncontrada:\n Chave  Nome Carro      Montadora       Consumo  Peso\n\n");
 
 	printf(" %i   ", cadastros[posicao].chave);
 	printf("%s ", cadastros[posicao].nomeCarro);
@@ -490,9 +744,17 @@ no* eliminarRegistro(no* cadastros, listaDenso* indice, int *qtd)
 	printf("%.2f ", cadastros[posicao].consumo);
 	printf("   %i\n", cadastros[posicao].peso);
 
-	printf("\nTem certeza que deseja excluir esse registro?");
-	printf("\n 1. Sim;\n 2. Nao;\n\nOpcao: ");
-	scanf("%i", &codigo);
+	do
+	{
+		printf("\nTem certeza que deseja excluir esse registro?");
+		printf("\n 1. Sim;\n 2. Nao;\n\nOpcao: ");
+		scanf("%i", &codigo);
+		if (codigo < 1 || codigo > 2)
+		{
+			printf("Nao existe tal opcao!\n\n");
+			system("pause");
+		}
+	} while (codigo < 1 || codigo > 2);
 
 	if (codigo == 1)
 	{
@@ -501,9 +763,15 @@ no* eliminarRegistro(no* cadastros, listaDenso* indice, int *qtd)
 
 		(*qtd)--;
 
+		printf("\nO registro %i foi excluido com sucesso!\n", posicao);
+		system("pause");
+		system("cls");
 		return(salvarNovoArquivo(aux, cadastros, qtd));
 
 	}
+	else printf("\nNada foi modificado!Retornando ao menu...\n");
+	system("pause");
+	system("cls");
 	return (cadastros);
 
 }
@@ -580,32 +848,40 @@ void consultarRegistro(no* cadastros, listaDenso* indice, int qtd)
 
 	system("cls");
 
-	printf("----- Consultar Registro -----\n\n");
-	printf("Digite o codigo que deseja encontrar: ");
-	scanf("%i", &codigo);
+	do
+	{
+		printf("----- Consultar Registro -----\n\n");
+		printf("Digite o codigo que deseja encontrar, ou digite 0 para sair;\n\nOpcao: ");
+		scanf("%i", &codigo);
 
-	posicao = buscaBinaria(indice, qtd, codigo);
+		posicao = buscaBinaria(indice, qtd, codigo);
+
+		system("cls");
+
+		if (posicao != -1)
+		{
+			printf(" Chave  Nome Carro      Montadora       Consumo  Peso\n\n");
+
+			printf(" %i   ", cadastros[posicao].chave);
+			printf("%s ", cadastros[posicao].nomeCarro);
+			for (j = 15 - strlen(cadastros[posicao].nomeCarro); j > 0; j--) printf(" ");
+			printf("%s ", cadastros[posicao].montadora);
+			for (j = 15 - strlen(cadastros[posicao].montadora); j > 0; j--) printf(" ");
+			if (cadastros[posicao].consumo < 10) printf("0");
+			printf("%.2f ", cadastros[posicao].consumo);
+			printf("   %i\n\n", cadastros[posicao].peso);
+			system("pause");
+			break;
+		}
+		else
+		{
+			system("cls");
+			printf("Erro! Nao foi encontrado o cadastro de chave %i na base de dados. Insira outro!\n\n", codigo);
+		}
+
+	} while (codigo != 0);
 
 	system("cls");
-
-	if (posicao != -1)
-	{
-		printf(" Chave  Nome Carro      Montadora       Consumo  Peso\n\n");
-
-		printf(" %i   ", cadastros[posicao].chave);
-		printf("%s ", cadastros[posicao].nomeCarro);
-		for (j = 15 - strlen(cadastros[posicao].nomeCarro); j > 0; j--) printf(" ");
-		printf("%s ", cadastros[posicao].montadora);
-		for (j = 15 - strlen(cadastros[posicao].montadora); j > 0; j--) printf(" ");
-		if (cadastros[posicao].consumo < 10) printf("0");
-		printf("%.2f ", cadastros[posicao].consumo);
-		printf("   %i\n", cadastros[posicao].peso);
-	}
-	else
-	{
-		printf("ERRO! NAO FOI ENCONTRADO O CADASTRO DE CHAVE %i NA BASE DE DADOS\n", codigo);
-	}
-
 }
 
 int buscaBinaria(listaDenso* indice, int tam, int n)
@@ -643,7 +919,7 @@ int* tabelaInversa(int *ordem, int *pri, no* cadastros, int qtd)
 	}
 
 	bubbleString(aux, qtd);
-	
+
 	for (i = 0; i < qtd; i++)
 	{
 		if (i == 0)
@@ -656,125 +932,12 @@ int* tabelaInversa(int *ordem, int *pri, no* cadastros, int qtd)
 
 void catAlfabetoOrd(no* cadastros, int pri_cat[], int *cadas, int qtd, char montadoras[5][50])
 {
-	int count[5] = { 0 };
+	int count[5] = { 0 }; //quantas montadoras
 	int i, j;
 	int countMont[5] = { 0 };
 
 	for (i = 0; i < 100; i++)
 		cadas[i] = -1;
-
-
-	tabInv *mont1, *mont2, *mont3, *mont4, *mont5;
-
-	for (i = 0; i < qtd; i++)
-	{
-		     if (strcmp(cadastros[i].montadora, montadoras[0]) == 0)
-			count[0]++;
-		else if (strcmp(cadastros[i].montadora, montadoras[1]) == 0)
-			count[1]++;
-		else if (strcmp(cadastros[i].montadora, montadoras[2]) == 0)
-			count[2]++;
-		else if (strcmp(cadastros[i].montadora, montadoras[3]) == 0)
-			count[3]++;
-		else if (strcmp(cadastros[i].montadora, montadoras[4]) == 0)
-			count[4]++;
-	}
-
-	mont1 = (tabInv*)malloc(count[0] * sizeof(tabInv));
-	mont2 = (tabInv*)malloc(count[1] * sizeof(tabInv));
-	mont3 = (tabInv*)malloc(count[2] * sizeof(tabInv));
-	mont4 = (tabInv*)malloc(count[3] * sizeof(tabInv));
-	mont5 = (tabInv*)malloc(count[4] * sizeof(tabInv));
-
-	for (i = 0; i < qtd; i++)
-	{
-		if (strcmp(cadastros[i].montadora, montadoras[0]) == 0) //VOLKSWAGEN
-		{
-			strcpy(mont1[countMont[0]].nome, cadastros[i].nomeCarro);
-			mont1[countMont[0]].posicao = i;
-			countMont[0]++;
-		}
-		else if (strcmp(cadastros[i].montadora, montadoras[1]) == 0) //CHEVROLET
-		{
-			strcpy(mont2[countMont[1]].nome, cadastros[i].nomeCarro);
-			mont2[countMont[1]].posicao = i;
-			countMont[1]++;
-		}
-		else if (strcmp(cadastros[i].montadora, montadoras[2]) == 0) //FORD
-		{
-			strcpy(mont3[countMont[2]].nome, cadastros[i].nomeCarro);
-			mont3[countMont[2]].posicao = i;
-			countMont[2]++;
-		}
-		else if (strcmp(cadastros[i].montadora, montadoras[3]) == 0) //FIAT
-		{
-			strcpy(mont4[countMont[3]].nome, cadastros[i].nomeCarro);
-			mont4[countMont[3]].posicao = i;
-			countMont[3]++;
-		}
-		else if (strcmp(cadastros[i].montadora, montadoras[4]) == 0) //HYUNDAI
-		{
-			strcpy(mont5[countMont[4]].nome, cadastros[i].nomeCarro);
-			mont5[countMont[4]].posicao = i;
-			countMont[4]++;
-		}
-	}
-
-	bubbleString(mont1, countMont[0]);
-	bubbleString(mont2, countMont[1]);
-	bubbleString(mont3, countMont[2]);
-	bubbleString(mont4, countMont[3]);
-	bubbleString(mont5, countMont[4]);
-
-	pri_cat[0] = mont1[0].posicao;
-	pri_cat[1] = mont2[0].posicao;
-	pri_cat[2] = mont3[0].posicao;
-	pri_cat[3] = mont4[0].posicao;
-	pri_cat[4] = mont5[0].posicao;
-
-	for(i = 0; i < countMont[0]; i++)
-		cadas[mont1[i].posicao] = mont1[i + 1].posicao;
-	
-	cadas[mont1[i - 1].posicao] = (-1);
-
-	for (i = 0; i < countMont[1]; i++)
-		cadas[mont2[i].posicao] = mont2[i + 1].posicao;
-	
-	cadas[mont2[i - 1].posicao] = (-1);
-
-	for (i = 0; i < countMont[2]; i++)
-		cadas[mont3[i].posicao] = mont3[i + 1].posicao;
-	
-	cadas[mont3[i - 1].posicao] = (-1);
-
-	for (i = 0; i < countMont[3]; i++)
-		cadas[mont4[i].posicao] = mont4[i + 1].posicao;
-	
-	cadas[mont4[i - 1].posicao] = (-1);
-
-	for (i = 0; i < countMont[4]; i++)
-		cadas[mont5[i].posicao] = mont5[i + 1].posicao;
-
-	cadas[mont5[i - 1].posicao] = (-1);
-
-	free(mont1);
-	free(mont2);
-	free(mont3);
-	free(mont4);
-	free(mont5);
-}
-
-void catChaveOrd(no* cadastros, int pri_cat[], int *cadas, int qtd, char montadoras[5][50])
-{
-	int count[5] = { 0 };
-	int i, j;
-	int countMont[5] = { 0 };
-
-	for (i = 0; i < 100; i++)
-		cadas[i] = -1;
-
-
-	listaDenso *mont1, *mont2, *mont3, *mont4, *mont5;
 
 	for (i = 0; i < qtd; i++)
 	{
@@ -790,86 +953,167 @@ void catChaveOrd(no* cadastros, int pri_cat[], int *cadas, int qtd, char montado
 			count[4]++;
 	}
 
-	mont1 = (listaDenso*)malloc(count[0] * sizeof(listaDenso));
-	mont2 = (listaDenso*)malloc(count[1] * sizeof(listaDenso));
-	mont3 = (listaDenso*)malloc(count[2] * sizeof(listaDenso));
-	mont4 = (listaDenso*)malloc(count[3] * sizeof(listaDenso));
-	mont5 = (listaDenso*)malloc(count[4] * sizeof(listaDenso));
+	tabInv *mont[5];
+
+	for (int k = 0; k < 5; k++) mont[k] = (tabInv*)malloc(count[k] * sizeof(tabInv));
 
 	for (i = 0; i < qtd; i++)
 	{
 		if (strcmp(cadastros[i].montadora, montadoras[0]) == 0) //VOLKSWAGEN
 		{
-			mont1[countMont[0]].chave = cadastros[i].chave;
-			mont1[countMont[0]].posicao = i;
+			strcpy(mont[0][countMont[0]].nome, cadastros[i].nomeCarro);
+			mont[0][countMont[0]].posicao = i;
 			countMont[0]++;
 		}
 		else if (strcmp(cadastros[i].montadora, montadoras[1]) == 0) //CHEVROLET
 		{
-			mont2[countMont[1]].chave = cadastros[i].chave;
-			mont2[countMont[1]].posicao = i;
+			strcpy(mont[1][countMont[1]].nome, cadastros[i].nomeCarro);
+			mont[1][countMont[1]].posicao = i;
 			countMont[1]++;
 		}
 		else if (strcmp(cadastros[i].montadora, montadoras[2]) == 0) //FORD
 		{
-			mont3[countMont[2]].chave = cadastros[i].chave;
-			mont3[countMont[2]].posicao = i;
+			strcpy(mont[2][countMont[2]].nome, cadastros[i].nomeCarro);
+			mont[2][countMont[2]].posicao = i;
 			countMont[2]++;
 		}
 		else if (strcmp(cadastros[i].montadora, montadoras[3]) == 0) //FIAT
 		{
-			mont4[countMont[3]].chave = cadastros[i].chave;
-			mont4[countMont[3]].posicao = i;
+			strcpy(mont[3][countMont[3]].nome, cadastros[i].nomeCarro);
+			mont[3][countMont[3]].posicao = i;
 			countMont[3]++;
 		}
 		else if (strcmp(cadastros[i].montadora, montadoras[4]) == 0) //HYUNDAI
 		{
-			mont5[countMont[4]].chave = cadastros[i].chave;
-			mont5[countMont[4]].posicao = i;
+			strcpy(mont[4][countMont[4]].nome, cadastros[i].nomeCarro);
+			mont[4][countMont[4]].posicao = i;
 			countMont[4]++;
 		}
 	}
 
-	bubble(mont1, countMont[0]);
-	bubble(mont2, countMont[1]);
-	bubble(mont3, countMont[2]);
-	bubble(mont4, countMont[3]);
-	bubble(mont5, countMont[4]);
+	for (int k = 0; k < 5; k++) bubbleString(mont[k], countMont[k]);
 
-	pri_cat[0] = mont1[0].posicao;
-	pri_cat[1] = mont2[0].posicao;
-	pri_cat[2] = mont3[0].posicao;
-	pri_cat[3] = mont4[0].posicao;
-	pri_cat[4] = mont5[0].posicao;
+	for (int k = 0; k < 5; k++) pri_cat[k] = mont[k][0].posicao;
 
 	for (i = 0; i < countMont[0]; i++)
-		cadas[mont1[i].posicao] = mont1[i + 1].posicao;
+		cadas[mont[0][i].posicao] = mont[0][i + 1].posicao;
 
-	cadas[mont1[i - 1].posicao] = (-1);
+	cadas[mont[0][i - 1].posicao] = (-1);
 
 	for (i = 0; i < countMont[1]; i++)
-		cadas[mont2[i].posicao] = mont2[i + 1].posicao;
+		cadas[mont[1][i].posicao] = mont[1][i + 1].posicao;
 
-	cadas[mont2[i - 1].posicao] = (-1);
+	cadas[mont[1][i - 1].posicao] = (-1);
 
 	for (i = 0; i < countMont[2]; i++)
-		cadas[mont3[i].posicao] = mont3[i + 1].posicao;
+		cadas[mont[2][i].posicao] = mont[2][i + 1].posicao;
 
-	cadas[mont3[i - 1].posicao] = (-1);
+	cadas[mont[2][i - 1].posicao] = (-1);
 
 	for (i = 0; i < countMont[3]; i++)
-		cadas[mont4[i].posicao] = mont4[i + 1].posicao;
+		cadas[mont[3][i].posicao] = mont[3][i + 1].posicao;
 
-	cadas[mont4[i - 1].posicao] = (-1);
+	cadas[mont[3][i - 1].posicao] = (-1);
 
 	for (i = 0; i < countMont[4]; i++)
-		cadas[mont5[i].posicao] = mont5[i + 1].posicao;
+		cadas[mont[4][i].posicao] = mont[4][i + 1].posicao;
 
-	cadas[mont5[i - 1].posicao] = (-1);
+	cadas[mont[4][i - 1].posicao] = (-1);
 
-	free(mont1);
-	free(mont2);
-	free(mont3);
-	free(mont4);
-	free(mont5);
+	for (int k = 0; k < 5; k++)	free(mont[k]);
+}
+
+void catChaveOrd(no* cadastros, int pri_cat[], int *cadas, int qtd, char montadoras[5][50])
+{
+	int count[5] = { 0 };
+	int i, j;
+	int countMont[5] = { 0 };
+
+	for (i = 0; i < 100; i++)
+		cadas[i] = -1;
+
+
+	listaDenso *mont[5];
+
+	for (i = 0; i < qtd; i++)
+	{
+		if (strcmp(cadastros[i].montadora, montadoras[0]) == 0)
+			count[0]++;
+		else if (strcmp(cadastros[i].montadora, montadoras[1]) == 0)
+			count[1]++;
+		else if (strcmp(cadastros[i].montadora, montadoras[2]) == 0)
+			count[2]++;
+		else if (strcmp(cadastros[i].montadora, montadoras[3]) == 0)
+			count[3]++;
+		else if (strcmp(cadastros[i].montadora, montadoras[4]) == 0)
+			count[4]++;
+	}
+
+	for (int k = 0; k < 5; k++) mont[k] = (listaDenso*)malloc(count[k] * sizeof(listaDenso));
+
+	for (i = 0; i < qtd; i++)
+	{
+		if (strcmp(cadastros[i].montadora, montadoras[0]) == 0) //VOLKSWAGEN
+		{
+			mont[0][countMont[0]].chave = cadastros[i].chave;
+			mont[0][countMont[0]].posicao = i;
+			countMont[0]++;
+		}
+		else if (strcmp(cadastros[i].montadora, montadoras[1]) == 0) //CHEVROLET
+		{
+			mont[1][countMont[1]].chave = cadastros[i].chave;
+			mont[1][countMont[1]].posicao = i;
+			countMont[1]++;
+		}
+		else if (strcmp(cadastros[i].montadora, montadoras[2]) == 0) //FORD
+		{
+			mont[2][countMont[2]].chave = cadastros[i].chave;
+			mont[2][countMont[2]].posicao = i;
+			countMont[2]++;
+		}
+		else if (strcmp(cadastros[i].montadora, montadoras[3]) == 0) //FIAT
+		{
+			mont[3][countMont[3]].chave = cadastros[i].chave;
+			mont[3][countMont[3]].posicao = i;
+			countMont[3]++;
+		}
+		else if (strcmp(cadastros[i].montadora, montadoras[4]) == 0) //HYUNDAI
+		{
+			mont[4][countMont[4]].chave = cadastros[i].chave;
+			mont[4][countMont[4]].posicao = i;
+			countMont[4]++;
+		}
+	}
+
+	for (int k = 0; k < 5; k++) bubble(mont[k], countMont[k]);
+
+	for (int k = 0; k < 5; k++) pri_cat[k] = mont[k][0].posicao;
+
+	for (i = 0; i < countMont[0]; i++)
+		cadas[mont[0][i].posicao] = mont[0][i + 1].posicao;
+
+	cadas[mont[0][i - 1].posicao] = (-1);
+
+	for (i = 0; i < countMont[1]; i++)
+		cadas[mont[1][i].posicao] = mont[1][i + 1].posicao;
+
+	cadas[mont[1][i - 1].posicao] = (-1);
+
+	for (i = 0; i < countMont[2]; i++)
+		cadas[mont[2][i].posicao] = mont[2][i + 1].posicao;
+
+	cadas[mont[2][i - 1].posicao] = (-1);
+
+	for (i = 0; i < countMont[3]; i++)
+		cadas[mont[3][i].posicao] = mont[3][i + 1].posicao;
+
+	cadas[mont[3][i - 1].posicao] = (-1);
+
+	for (i = 0; i < countMont[4]; i++)
+		cadas[mont[4][i].posicao] = mont[4][i + 1].posicao;
+
+	cadas[mont[4][i - 1].posicao] = (-1);
+
+	for (int k = 0; k < 5; k++) free(mont[k]);
+	//free(mont);
 }
