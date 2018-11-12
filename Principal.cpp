@@ -1,4 +1,4 @@
-/*
+﻿/*
 BRUNO GUILHERME SPIRLANDELI MARINI     17037607
 MARCOS AURELIO TAVARES DE SOUSA FILHO  17042284
 */
@@ -320,7 +320,7 @@ no* modificarRegistro(no* cadastros, listaDenso* indice, int qtd, char montadora
 	{
 		system("cls");
 
-		printf("\n Chave  Nome Carro      Montadora       Consumo  Peso\n\n");
+		printf("\n Chave  Nome Carro      Montadora       Consumo[Km/L]  Peso[Kg]\n\n");
 
 		printf(" %i   ", cadastros[posicao].chave);
 		printf("%s ", cadastros[posicao].nomeCarro);
@@ -328,7 +328,7 @@ no* modificarRegistro(no* cadastros, listaDenso* indice, int qtd, char montadora
 		printf("%s ", cadastros[posicao].montadora);
 		for (j = 15 - strlen(cadastros[posicao].montadora); j > 0; j--) printf(" ");
 		if (cadastros[posicao].consumo < 10) printf("0");
-		printf("%.2f ", cadastros[posicao].consumo);
+		printf("%.2f       ", cadastros[posicao].consumo);
 		if (cadastros[posicao].peso < 1000) printf("0");
 		printf("   %i\n", cadastros[posicao].peso);
 
@@ -363,7 +363,7 @@ no* modificarRegistro(no* cadastros, listaDenso* indice, int qtd, char montadora
 
 		system("cls");
 
-		printf("\n Chave  Nome Carro      Montadora       Consumo  Peso\n\n");
+		printf("\n Chave  Nome Carro      Montadora       Consumo[Km/L]  Peso[Kg]\n\n");
 
 		printf(" %i   ", cadastros[posicao].chave);
 		printf("%s ", cadastros[posicao].nomeCarro);
@@ -371,7 +371,7 @@ no* modificarRegistro(no* cadastros, listaDenso* indice, int qtd, char montadora
 		printf("%s ", cadastros[posicao].montadora);
 		for (j = 15 - strlen(cadastros[posicao].montadora); j > 0; j--) printf(" ");
 		if (cadastros[posicao].consumo < 10) printf("0");
-		printf("%.2f ", cadastros[posicao].consumo);
+		printf("%.2f       ", cadastros[posicao].consumo);
 		if (cadastros[posicao].peso < 1000) printf("0");
 		printf("   %i\n", cadastros[posicao].peso);
 
@@ -432,7 +432,7 @@ no* modificarRegistro(no* cadastros, listaDenso* indice, int qtd, char montadora
 
 		system("cls");
 
-		printf("\n Chave  Nome Carro      Montadora       Consumo  Peso\n\n");
+		printf("\n Chave  Nome Carro      Montadora       Consumo[Km/L]  Peso[Kg]\n\n");
 
 		printf(" %i   ", cadastros[posicao].chave);
 		printf("%s ", cadastros[posicao].nomeCarro);
@@ -440,7 +440,7 @@ no* modificarRegistro(no* cadastros, listaDenso* indice, int qtd, char montadora
 		printf("%s ", cadastros[posicao].montadora);
 		for (j = 15 - strlen(cadastros[posicao].montadora); j > 0; j--) printf(" ");
 		if (cadastros[posicao].consumo < 10) printf("0");
-		printf("%.2f ", cadastros[posicao].consumo);
+		printf("%.2f       ", cadastros[posicao].consumo);
 		if (cadastros[posicao].peso < 1000) printf("0");
 		printf("   %i\n", cadastros[posicao].peso);
 
@@ -469,7 +469,7 @@ no* modificarRegistro(no* cadastros, listaDenso* indice, int qtd, char montadora
 
 		system("cls");
 
-		printf("\n Chave  Nome Carro      Montadora       Consumo  Peso\n\n");
+		printf("\n Chave  Nome Carro      Montadora       Consumo[Km/L]  Peso[Kg]\n\n");
 
 		printf(" %i   ", cadastros[posicao].chave);
 		printf("%s ", cadastros[posicao].nomeCarro);
@@ -477,7 +477,7 @@ no* modificarRegistro(no* cadastros, listaDenso* indice, int qtd, char montadora
 		printf("%s ", cadastros[posicao].montadora);
 		for (j = 15 - strlen(cadastros[posicao].montadora); j > 0; j--) printf(" ");
 		if (cadastros[posicao].consumo < 10) printf("0");
-		printf("%.2f ", cadastros[posicao].consumo);
+		printf("%.2f       ", cadastros[posicao].consumo);
 		if (cadastros[posicao].peso < 1000) printf("0");
 		printf("   %i\n", cadastros[posicao].peso);
 
@@ -553,7 +553,7 @@ void impressoes(no* cadastros, listaDenso* lista, int qtd, int pri, int *tabelaI
 	case chaveOrdenada:
 
 		printf("---Impressao por chave ordenada---\n\n");
-		printf(" Chave  Nome Carro      Montadora       Consumo  Peso\n\n");
+		printf(" Chave  Nome Carro      Montadora       Consumo[Km/L]  Peso[Kg]\n\n");
 
 		for (i = 0; i < qtd; i++)
 		{
@@ -565,7 +565,7 @@ void impressoes(no* cadastros, listaDenso* lista, int qtd, int pri, int *tabelaI
 			printf("%s ", cadastros[posicao].montadora);
 			for (j = 15 - strlen(cadastros[posicao].montadora); j > 0; j--) printf(" ");
 			if (cadastros[posicao].consumo < 10) printf("0");
-			printf("%.2f ", cadastros[posicao].consumo);
+			printf("%.2f       ", cadastros[posicao].consumo);
 			printf("   %i\n", cadastros[posicao].peso);
 		}
 
@@ -573,7 +573,7 @@ void impressoes(no* cadastros, listaDenso* lista, int qtd, int pri, int *tabelaI
 	case nomeOrdenado:
 
 		printf("---Impressao por nome ordenado---\n\n");
-		printf(" Chave  Nome Carro      Montadora       Consumo  Peso\n\n");
+		printf(" Chave  Nome Carro      Montadora       Consumo[Km/L]  Peso[Kg]\n\n");
 
 		posicao = pri;
 		i = qtd;
@@ -586,7 +586,7 @@ void impressoes(no* cadastros, listaDenso* lista, int qtd, int pri, int *tabelaI
 			printf("%s ", cadastros[posicao].montadora);
 			for (j = 15 - strlen(cadastros[posicao].montadora); j > 0; j--) printf(" ");
 			if (cadastros[posicao].consumo < 10) printf("0");
-			printf("%.2f ", cadastros[posicao].consumo);
+			printf("%.2f       ", cadastros[posicao].consumo);
 			printf("   %i\n", cadastros[posicao].peso);
 
 			posicao = tabelaInversaAlfabeto[posicao];
@@ -600,7 +600,7 @@ void impressoes(no* cadastros, listaDenso* lista, int qtd, int pri, int *tabelaI
 		for (i = 0; i < 5; i++)
 		{
 			printf("\n\n --------------  %s  --------------\n\n", montadoras[i]);
-			printf(" Chave  Nome Carro      Consumo  Peso\n\n");
+			printf(" Chave  Nome Carro      Consumo[Km/L]  Peso[Kg]\n\n");
 
 			posicao = pri_cat_chave[i];
 
@@ -610,7 +610,7 @@ void impressoes(no* cadastros, listaDenso* lista, int qtd, int pri, int *tabelaI
 				printf("%s ", cadastros[posicao].nomeCarro);
 				for (j = 15 - strlen(cadastros[posicao].nomeCarro); j > 0; j--) printf(" ");
 				if (cadastros[posicao].consumo < 10) printf("0");
-				printf("%.2f ", cadastros[posicao].consumo);
+				printf("%.2f       ", cadastros[posicao].consumo);
 				printf("   %i\n", cadastros[posicao].peso);
 				posicao = catChave[posicao];
 
@@ -625,7 +625,7 @@ void impressoes(no* cadastros, listaDenso* lista, int qtd, int pri, int *tabelaI
 		for (i = 0; i < 5; i++)
 		{
 			printf("\n\n --------------  %s  --------------\n\n", montadoras[i]);
-			printf(" Chave  Nome Carro      Consumo  Peso\n\n");
+			printf(" Chave  Nome Carro      Consumo[Km/L]  Peso[Kg]\n\n");
 
 			posicao = pri_cat_alfabeto[i];
 
@@ -635,7 +635,7 @@ void impressoes(no* cadastros, listaDenso* lista, int qtd, int pri, int *tabelaI
 				printf("%s ", cadastros[posicao].nomeCarro);
 				for (j = 15 - strlen(cadastros[posicao].nomeCarro); j > 0; j--) printf(" ");
 				if (cadastros[posicao].consumo < 10) printf("0");
-				printf("%.2f ", cadastros[posicao].consumo);
+				printf("%.2f       ", cadastros[posicao].consumo);
 				printf("   %i\n", cadastros[posicao].peso);
 				posicao = catNome[posicao];
 
@@ -646,7 +646,7 @@ void impressoes(no* cadastros, listaDenso* lista, int qtd, int pri, int *tabelaI
 		break;
 	case imprimirArquivo:
 		printf("---Impressao do arquivo---\n\n");
-		printf(" Chave  Nome Carro      Montadora       Consumo  Peso\n\n");
+		printf(" Chave  Nome Carro      Montadora       Consumo[Km/L]  Peso[Kg]\n\n");
 
 		for (i = 0; i < qtd; i++)
 		{
@@ -656,7 +656,7 @@ void impressoes(no* cadastros, listaDenso* lista, int qtd, int pri, int *tabelaI
 			printf("%s ", cadastros[i].montadora);
 			for (j = 15 - strlen(cadastros[i].montadora); j > 0; j--) printf(" ");
 			if (cadastros[i].consumo < 10) printf("0");
-			printf("%.2f ", cadastros[i].consumo);
+			printf("%.2f       ", cadastros[i].consumo);
 			printf("   %i\n", cadastros[i].peso);
 		}
 
@@ -704,7 +704,7 @@ no* eliminarRegistro(no* cadastros, listaDenso* indice, int *qtd)
 
 		if (codigo == 1)
 		{
-			printf("\n Chave  Nome Carro      Montadora       Consumo  Peso\n\n");
+			printf("\n Chave  Nome Carro      Montadora       Consumo[Km/L]  Peso[Kg]\n\n");
 
 			for (i = 0; i < *qtd; i++)
 			{
@@ -714,7 +714,7 @@ no* eliminarRegistro(no* cadastros, listaDenso* indice, int *qtd)
 				printf("%s ", cadastros[i].montadora);
 				for (j = 15 - strlen(cadastros[i].montadora); j > 0; j--) printf(" ");
 				if (cadastros[i].consumo < 10) printf("0");
-				printf("%.2f ", cadastros[i].consumo);
+				printf("%.2f       ", cadastros[i].consumo);
 				printf("   %i\n", cadastros[i].peso);
 			}
 
@@ -737,7 +737,7 @@ no* eliminarRegistro(no* cadastros, listaDenso* indice, int *qtd)
 		}
 	} while (posicao == -1);
 
-	printf("\n\nEncontrada:\n Chave  Nome Carro      Montadora       Consumo  Peso\n\n");
+	printf("\n\nEncontrada:\n Chave  Nome Carro      Montadora       Consumo[Km/L]  Peso[Kg]\n\n");
 
 	printf(" %i   ", cadastros[posicao].chave);
 	printf("%s ", cadastros[posicao].nomeCarro);
@@ -745,7 +745,7 @@ no* eliminarRegistro(no* cadastros, listaDenso* indice, int *qtd)
 	printf("%s ", cadastros[posicao].montadora);
 	for (j = 15 - strlen(cadastros[posicao].montadora); j > 0; j--) printf(" ");
 	if (cadastros[posicao].consumo < 10) printf("0");
-	printf("%.2f ", cadastros[posicao].consumo);
+	printf("%.2f       ", cadastros[posicao].consumo);
 	printf("   %i\n", cadastros[posicao].peso);
 
 	do
@@ -864,7 +864,7 @@ void consultarRegistro(no* cadastros, listaDenso* indice, int qtd)
 
 		if (posicao != -1)
 		{
-			printf(" Chave  Nome Carro      Montadora       Consumo  Peso\n\n");
+			printf(" Chave  Nome Carro      Montadora       Consumo[Km/L]  Peso[Kg]\n\n");
 
 			printf(" %i   ", cadastros[posicao].chave);
 			printf("%s ", cadastros[posicao].nomeCarro);
@@ -872,7 +872,7 @@ void consultarRegistro(no* cadastros, listaDenso* indice, int qtd)
 			printf("%s ", cadastros[posicao].montadora);
 			for (j = 15 - strlen(cadastros[posicao].montadora); j > 0; j--) printf(" ");
 			if (cadastros[posicao].consumo < 10) printf("0");
-			printf("%.2f ", cadastros[posicao].consumo);
+			printf("%.2f       ", cadastros[posicao].consumo);
 			printf("   %i\n\n", cadastros[posicao].peso);
 			system("pause");
 			break;
